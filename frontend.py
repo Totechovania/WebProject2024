@@ -1,5 +1,5 @@
 from utilities.system import init_all
-from flask import redirect
+from flask import redirect, url_for, render_template
 
 app = init_all(__name__)
 
@@ -16,32 +16,32 @@ def sign_in_page():
 
 @app.route('/', methods=['GET'])
 def main_page():
-    return redirect('/sign_in')
+    return render_template('index.html', title='Домашняя страница')
 
 
 @app.route('/profile/<int:id>', methods=['GET'])
 def profile_page(id):
-    return
+    return render_template('.html', title='Профиль')
 
 
 @app.route('/graphs', methods=['GET'])
 def graphs_page():
-    return
+    return render_template('.html', title='Графики')
 
 
 @app.route('/new_graph', methods=['GET', 'PUT'])
 def new_graph_page():
-    return
+    return render_template('.html', title='Новый график')
 
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings_page():
-    return
+    return render_template('.html', title='Настройки')
 
 
 @app.route('/projects', methods=['GET'])
 def projects_page():
-    return
+    return render_template('.html', title='Проекты')
 
 
 @app.errorhandler(404)
