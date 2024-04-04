@@ -2,6 +2,7 @@ import numpy as np
 from PIL import Image, ImageFilter
 from formulas_parsing import parse_formulas
 from function_generation import generate_graph_fun, generate_vars_fun
+from image_utilities import graph_to_image
 
 
 class GraphDrawer:
@@ -31,22 +32,43 @@ class GraphDrawer:
     def ind_to_y(self, i):
         return - (i - self.img_h / 2) * self.scale + self.c_y
 
-    def draw(self, formulas: str, filename: str):
-        formulas, cases, variables = parse_formulas(formulas)
+    def calculate_graphs(self, text):
+        formulas, cases, variables = parse_formulas(text)
         var_fun = generate_vars_fun(variables)
         var_array = np.zeros((len(variables), self.img_h, self.img_w,))
 
         var_fun = np.vectorize(var_fun)
         var_array[...] = var_fun(self.field[..., 0], self.field[..., 1])
-        print(var_array)
-        print(var_array.shape)
 
         graph_fun = generate_graph_fun(formulas, variables)
+        graph_array = np.zeros((len(formulas), self.img_h, self.img_w,))
+
+        graph_fun = np.vectorize(graph_fun)
+        graph_array[...] = graph_fun(self.field[..., 0], self.field[..., 1],
+                                     *(e[:] for e in var_array))
+
+        return graph_array, cases
+
+    def draw(self, text: str, filename: str):
+        from time import time
+
+        start = time()
+        graph_array, cases = self.calculate_graphs(text)
+
+        res = Image.new('RGBA', (self.img_w, self.img_h), (255, 255, 255, 255))
+        for graph, mode in zip(graph_array, cases):
+            color = (115, 200, 125, 255)
+            im = graph_to_image(graph, mode, color)
+            res.paste(im, mask=im)
+
+        res.save(filename)
+        end = time()
+        print(end-start)
 
 
-a = GraphDrawer()
+a = GraphDrawer(scale=0.005, img_w=1200)
 
-a.draw('d=x ** y\nk=0\ny=x\nsin(x)=cos(y)', '1213')
+a.draw('y<1/x\n sin(x**3 * y**2) = cos(x**2 * y**3)', '1213.png')
 
 
 

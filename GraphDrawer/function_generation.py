@@ -20,7 +20,7 @@ def generate_graph_fun(formulas, variables):
     with open('code_templates/graph_template.txt', 'rt',  encoding='utf') as f:
         graph_template = f.read()
 
-    code = f"def fun(x, y, {', '.join(variables.keys())}, time=0):\n"
+    code = f"def fun(x, y, {''.join(f'{e}, ' for e in variables.keys())} time=0):\n"
 
     for i, formula in enumerate(formulas):
         formula_code = graph_template.format(ind=i, expression=formula)
@@ -34,7 +34,6 @@ def generate_graph_fun(formulas, variables):
 
     loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg}
 
-    print(code)
     exec(code, loc)
 
     return loc['fun']
@@ -55,7 +54,6 @@ def generate_vars_fun(variables):
 
     loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg}
 
-    print(code)
     exec(code, loc)
 
     return loc['fun']
