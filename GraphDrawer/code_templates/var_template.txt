@@ -1,0 +1,8 @@
+try:
+    {name} = {expression}
+except ZeroDivisionError:
+    {name} = None
+except ValueError:
+    {name} = None
+if type({name}) == complex:
+    {name} = None

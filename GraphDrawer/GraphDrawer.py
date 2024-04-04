@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image, ImageFilter
 from formulas_parsing import parse_formulas
-from function_generation import generate_function
+from function_generation import generate_function, generate_vars_fun
 
 
 class GraphDrawer:
@@ -30,6 +30,21 @@ class GraphDrawer:
 
     def ind_to_y(self, i):
         return - (i - self.img_h / 2) * self.scale + self.c_y
+
+    def draw(self, formulas: str, filename: str):
+        formulas, cases, variables = parse_formulas(formulas)
+        var_fun = generate_vars_fun(variables)
+        var_array = np.zeros(( len(variables), self.img_h, self.img_w,))
+
+        var_fun = np.vectorize(var_fun)
+        var_array[...] = var_fun(self.field[..., 0], self.field[..., 1])
+        print(var_array)
+        print(var_array.shape)
+
+a = GraphDrawer()
+
+a.draw('d=x ** y\nk=0\n', '1213')
+
 
 
 

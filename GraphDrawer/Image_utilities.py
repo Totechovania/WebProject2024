@@ -17,4 +17,6 @@ def make_transparent_and_colorful(img: Image, graph_color,):
 
 
 def graph_from_array(array):
-    array = array[:]
+    im = Image.fromarray(array)
+    im = im.filter(ImageFilter.FIND_EDGES)
+    return im
