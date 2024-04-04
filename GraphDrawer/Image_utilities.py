@@ -14,3 +14,7 @@ def make_transparent_and_colorful(img: Image, graph_color,):
     img = Image.fromarray(data)
 
     return img
+
+
+def graph_from_array(array):
+    array = array[:]

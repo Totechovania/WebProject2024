@@ -1,5 +1,7 @@
 import numpy as np
 from PIL import Image, ImageFilter
+from formulas_parsing import parse_formulas
+from function_generation import generate_function
 
 
 class GraphDrawer:
@@ -28,4 +30,6 @@ class GraphDrawer:
 
     def ind_to_y(self, i):
         return - (i - self.img_h / 2) * self.scale + self.c_y
+
+
 
