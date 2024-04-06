@@ -6,12 +6,12 @@ from image_utilities import graph_to_image
 
 
 class GraphDrawer:
-    def __init__(self,  img_w: int = 1000, img_h: int = 1000,
-                 scale: float = 0.1, c_x: float = 0, c_y: float = 0,
+    def __init__(self, img_w: int = 1000, img_h: int = 1000,
+                 units_per_pixel: float = 0.1, c_x: float = 0, c_y: float = 0,
                  frames: int = 1):
         self.img_w = img_w
         self.img_h = img_h
-        self.scale = scale
+        self.units_per_pixel = units_per_pixel
         self.c_x = c_x
         self.c_y = c_y
         self.frames = frames
@@ -27,13 +27,14 @@ class GraphDrawer:
         return field
 
     def ind_to_x(self, i):
-        return (i - self.img_w / 2) * self.scale + self.c_x
+        return (i - self.img_w / 2) * self.units_per_pixel + self.c_x
 
     def ind_to_y(self, i):
-        return - (i - self.img_h / 2) * self.scale + self.c_y
+        return - (i - self.img_h / 2) * self.units_per_pixel + self.c_y
 
     def calculate_graphs(self, text):
         formulas, cases, variables = parse_formulas(text)
+
         var_fun = generate_vars_fun(variables)
         var_array = np.zeros((len(variables), self.img_h, self.img_w,))
 
@@ -51,13 +52,14 @@ class GraphDrawer:
 
     def draw(self, text: str, filename: str):
         from time import time
+        from random import randint
 
         start = time()
         graph_array, cases = self.calculate_graphs(text)
 
         res = Image.new('RGBA', (self.img_w, self.img_h), (255, 255, 255, 255))
         for graph, mode in zip(graph_array, cases):
-            color = (115, 200, 125, 255)
+            color = (randint(0, 256), randint(0, 256), randint(0, 256), 255)
             im = graph_to_image(graph, mode, color)
             res.paste(im, mask=im)
 
@@ -66,9 +68,9 @@ class GraphDrawer:
         print(end-start)
 
 
-a = GraphDrawer(scale=0.005, img_w=1200)
+a = GraphDrawer(img_w=1000, img_h=1000, units_per_pixel=0.005)
 
-a.draw('y<1/x\n sin(x**3 * y**2) = cos(x**2 * y**3)', '1213.png')
+a.draw('x=-x', '1213.png')
 
 
 
