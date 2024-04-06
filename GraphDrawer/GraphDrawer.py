@@ -50,16 +50,18 @@ class GraphDrawer:
 
         return graph_array, cases
 
-    def draw(self, text: str, filename: str):
+    def draw(self, text: str, colors,  filename: str):
         from time import time
-        from random import randint
 
         start = time()
         graph_array, cases = self.calculate_graphs(text)
 
+        color_i = 0
         res = Image.new('RGBA', (self.img_w, self.img_h), (255, 255, 255, 255))
         for graph, mode in zip(graph_array, cases):
-            color = (randint(0, 256), randint(0, 256), randint(0, 256), 255)
+            color = colors[color_i]
+            color_i = (color_i + 1) % len(colors)
+
             im = graph_to_image(graph, mode, color)
             res.paste(im, mask=im)
 
@@ -68,9 +70,15 @@ class GraphDrawer:
         print(end-start)
 
 
-a = GraphDrawer(img_w=1000, img_h=1000, units_per_pixel=0.005)
 
-a.draw('x=-x', '1213.png')
+
+a = GraphDrawer(img_w=1000, img_h=1000, units_per_pixel=0.005)
+colors = (
+    (125, 125, 255),
+    (0, 0, 0),
+    (0, 0, 0)
+)
+a.draw('y=round(x)\ny=0\nx=0', colors,  '1213.png')
 
 
 
