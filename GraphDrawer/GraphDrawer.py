@@ -71,7 +71,6 @@ class GraphDrawer:
 
 
 
-
 if __name__ == '__main__':
     a = GraphDrawer(img_w=1000, img_h=1000, units_per_pixel=0.005)
     colors = (

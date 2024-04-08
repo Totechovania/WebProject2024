@@ -1,7 +1,7 @@
 from utilities.system import init_all
 from flask import redirect, url_for, render_template
 
-app = init_all(__name__)
+app = init_all()
 
 
 @app.route('/sign_up', methods=['GET'])
@@ -54,4 +54,3 @@ def error_401(_):
     return redirect('/sign_in')
 
 
-app.run(port=2000, host='127.0.0.1')
