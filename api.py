@@ -133,7 +133,7 @@ def all_users():
 
 
 @blueprint.route('/api/open_user/<int:user_id>', methods=['GET'])
-def open_graph(user_id):
+def open_user(user_id):
     user = db_sess.query(users.User).get(user_id)
     if not user:
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
