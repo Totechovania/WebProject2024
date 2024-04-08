@@ -1,5 +1,6 @@
 import flask
 from data import db_session, graphs, users
+import datetime
 
 blueprint = flask.Blueprint(
     'api',
@@ -20,7 +21,8 @@ def sign_up():
     new_user = users.User(
         name=flask.request.json['name'],
         email=flask.request.json['email'],
-        password=flask.request.json['password']
+        password=flask.request.json['password'],
+        created_date=datetime.datetime.now()
     )
     db_sess.add(new_user)
     db_sess.commit()
@@ -44,7 +46,7 @@ def sign_in():
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
 
 
-@blueprint.route('/api/delete_user<int:graph_id>', methods=['DELETE'])
+@blueprint.route('/api/delete_graph<int:graph_id>', methods=['DELETE'])
 def delete_graph(graph_id):
     graph = db_sess.query(users.User).get(graph_id)
     if not graph:
@@ -114,5 +116,30 @@ def all_graphs():
             'graphs':
                 [item.to_dict(only=('name', 'function', 'created_date'))
                  for item in graph]
+        }
+    )
+
+
+@blueprint.route('/api/all_users', methods=['GET'])
+def all_users():
+    user = db_sess.query(users.User).all()
+    return flask.jsonify(
+        {
+            'users':
+                [item.to_dict(only=('name', 'email', 'password', 'created_date'))
+                 for item in user]
+        }
+    )
+
+
+@blueprint.route('/api/open_user/<int:user_id>', methods=['GET'])
+def open_graph(user_id):
+    user = db_sess.query(users.User).get(user_id)
+    if not user:
+        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+    return flask.jsonify(
+        {
+            'user': user.to_dict(only=(
+                'name', 'email', 'password', 'created_date'))
         }
     )
