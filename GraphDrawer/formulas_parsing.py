@@ -3,7 +3,7 @@ def parse_formulas(text):
     formulas = []
     cases = []
     variables = {}
-    lst = text.replace(' ', '').split('\n')
+    lst = text.replace(' ', '').replace('^', '**').split('\n')
     while '' in lst:
         lst.remove('')
     for line in lst:

@@ -2,7 +2,7 @@ import numpy as np
 from PIL import Image, ImageFilter
 from formulas_parsing import parse_formulas
 from function_generation import generate_graph_fun, generate_vars_fun
-from image_utilities import graph_to_image
+from image_utilities import graph_to_image, draw_coords
 
 
 class GraphDrawer:
@@ -57,13 +57,13 @@ class GraphDrawer:
         graph_array, cases = self.calculate_graphs(text)
 
         color_i = 0
-        res = Image.new('RGBA', (self.img_w, self.img_h), (255, 255, 255, 255))
+        res = draw_coords(self.img_w, self.img_h, self.units_per_pixel, self.c_x, self.c_y)
         for graph, mode in zip(graph_array, cases):
             color = colors[color_i]
             color_i = (color_i + 1) % len(colors)
 
             im = graph_to_image(graph, mode, color)
-            res.paste(im, mask=im)
+            res = Image.alpha_composite(res, im)
 
         res.save(filename)
         end = time()
@@ -72,14 +72,12 @@ class GraphDrawer:
 
 
 
-a = GraphDrawer(img_w=1000, img_h=1000, units_per_pixel=0.005)
-colors = (
-    (125, 125, 255),
-    (0, 0, 0),
-    (0, 0, 0)
-)
-a.draw('y=round(x)\ny=0\nx=0', colors,  '1213.png')
-
-
-
+if __name__ == '__main__':
+    a = GraphDrawer(img_w=1000, img_h=1000, units_per_pixel=0.005)
+    colors = (
+        (125, 125, 255),
+        (0, 0, 0),
+        (0, 0, 0)
+    )
+    a.draw('sin(x^3 * y^2) = cos(x^2 * y^3)', colors,  '1213.png')
 
