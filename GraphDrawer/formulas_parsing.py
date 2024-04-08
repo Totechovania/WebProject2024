@@ -3,7 +3,7 @@ def parse_formulas(text):
     formulas = []
     cases = []
     variables = {}
-    lst = text.replace(' ', '').split('\n')
+    lst = text.replace(' ', '').replace('^', '**').split('\n')
     while '' in lst:
         lst.remove('')
     for line in lst:
@@ -15,13 +15,13 @@ def parse_formulas(text):
             f1, f2 = line.split('>=')
             case = '>='
         elif '<=' in line:
-            f1, f2 = line.split('<=')
+            f2, f1 = line.split('<=')
             case = '>='
         elif '>' in line:
             f1, f2 = line.split('>')
             case = '>'
         elif '<' in line:
-            f1, f2 = line.split('<')
+            f2, f1 = line.split('<')
             case = '>'
         elif '=' in line:
             f1, f2 = line.split('=')
@@ -35,7 +35,7 @@ def parse_formulas(text):
         if var:
             variables[f1] = f2
         else:
-            formulas.append(f1 + ' - ' + f2)
+            formulas.append(f1 + ' - (' + f2 + ')')
             cases.append(case)
 
     return formulas, cases,  variables
