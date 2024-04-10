@@ -1,2 +1,4 @@
-from data import users
-from data import graphs
+from . import users
+from . import graphs
+from . import news
+from . import category

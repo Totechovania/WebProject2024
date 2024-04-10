@@ -1,8 +1,8 @@
-from frontend import app
+import frontend
 
 
 def main():
-    app.run(port=2000, host='127.0.0.1')
+    frontend.app.run(port=2000, host='127.0.0.1')
 
 
 if __name__ == '__main__':
