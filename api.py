@@ -148,9 +148,9 @@ def open_user(user_id):
         }
     )
 
+
 @blueprint.route('/api/draw', methods=['POST'])
 def draw():
-
     json = flask.request.get_json()
     print(json)
     colors = json['colors']
