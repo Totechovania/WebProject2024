@@ -29,5 +29,4 @@ def global_init(db_file='db/database.db'):
 
 def create_session() -> Session:
     global __factory
-    global_init()
     return __factory()
