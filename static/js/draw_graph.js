@@ -14,9 +14,13 @@ function draw() {
     if (!pixel_per_unit) pixel_per_unit = document.getElementById('pixel_per_unit').placeholder;
 
     let formulas = [];
+    let colors = [];
     for (let i = 0; i < id_count; i++) {
         let elem = document.getElementById(`input${i}`);
-        if (elem.value) formulas.push(elem.value);
+        if (elem.value) {
+            formulas.push(elem.value);
+            colors.push(document.getElementById(`color_input${i}`).value);
+        }
     }
 
     var xmlhttp = new XMLHttpRequest();
@@ -28,8 +32,8 @@ function draw() {
         }
     };
 
-    xmlhttp.open("POST", "/draw", true);
+    xmlhttp.open("POST", "/api/draw", true);
     xmlhttp.setRequestHeader("Content-type", "application/json");
-    xmlhttp.send( JSON.stringify({height, width, center_x, center_y, pixel_per_unit, formulas}) );
+    xmlhttp.send( JSON.stringify({height, width, center_x, center_y, pixel_per_unit, formulas, colors}) );
 
 }
