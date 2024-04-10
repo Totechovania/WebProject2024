@@ -1,12 +1,13 @@
-def parse_formulas(text):
-    def_vars = ('x', 'y', 'time')
+def parse_formulas(lst, colors):
+    def_vars = ('x', 'y')
     formulas = []
     cases = []
     variables = {}
-    lst = text.replace(' ', '').replace('^', '**').split('\n')
+    res_colors = []
     while '' in lst:
         lst.remove('')
-    for line in lst:
+    for line, color in zip(lst, colors):
+        line = line.replace(' ', '').replace('^', '**')
         var = False
         case = None
         f1, f2 = None, None
@@ -35,10 +36,11 @@ def parse_formulas(text):
         if var:
             variables[f1] = f2
         else:
+            res_colors.append(color)
             formulas.append(f1 + ' - (' + f2 + ')')
             cases.append(case)
 
-    return formulas, cases,  variables
+    return formulas, res_colors, cases,  variables
 
 
 def check_formula(formula: str):

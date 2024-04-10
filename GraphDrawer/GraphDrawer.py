@@ -1,8 +1,8 @@
 import numpy as np
 from PIL import Image, ImageFilter
-from formulas_parsing import parse_formulas
-from function_generation import generate_graph_fun, generate_vars_fun
-from image_utilities import graph_to_image, draw_coords
+from GraphDrawer.formulas_parsing import parse_formulas
+from GraphDrawer.function_generation import generate_graph_fun, generate_vars_fun
+from GraphDrawer.image_utilities import graph_to_image, draw_coords
 
 
 class GraphDrawer:
@@ -32,8 +32,8 @@ class GraphDrawer:
     def ind_to_y(self, i):
         return - (i - self.img_h / 2) * self.units_per_pixel + self.c_y
 
-    def calculate_graphs(self, text):
-        formulas, cases, variables = parse_formulas(text)
+    def calculate_graphs(self, lst, colors):
+        formulas, colors, cases, variables = parse_formulas(lst, colors)
 
         var_fun = generate_vars_fun(variables)
         var_array = np.zeros((len(variables), self.img_h, self.img_w,))
@@ -48,13 +48,10 @@ class GraphDrawer:
         graph_array[...] = graph_fun(self.field[..., 0], self.field[..., 1],
                                      *(e[:] for e in var_array))
 
-        return graph_array, cases
+        return graph_array, cases, colors
 
-    def draw(self, text: str, colors,  filename: str):
-        from time import time
-
-        start = time()
-        graph_array, cases = self.calculate_graphs(text)
+    def draw(self, lst: str, colors):
+        graph_array, cases, colors = self.calculate_graphs(lst, colors)
 
         color_i = 0
         res = draw_coords(self.img_w, self.img_h, self.units_per_pixel, self.c_x, self.c_y)
@@ -65,18 +62,7 @@ class GraphDrawer:
             im = graph_to_image(graph, mode, color)
             res = Image.alpha_composite(res, im)
 
-        res.save(filename)
-        end = time()
-        print(end-start)
+        return res
 
 
-
-if __name__ == '__main__':
-    a = GraphDrawer(img_w=1000, img_h=1000, units_per_pixel=0.005)
-    colors = (
-        (125, 125, 255),
-        (0, 0, 0),
-        (0, 0, 0)
-    )
-    a.draw('sin(x^3 * y^2) = cos(x^2 * y^3)', colors,  '1213.png')
 

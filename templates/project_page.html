@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid xl">
+</div>
+        <div class="row">
+
+            <div class="col-sm-4 bg-light text-white">
+                <style>input {width: 100%;}</style>
+                <div class="d-flex flex-column" id="formulas">
+                </div>
+                <button type="button" class="btn w-100" id="new_btn">
+                        <div class="d-flex flex-row  p-1 bg-light border-1" onclick="add_formula()">
+                            new
+                        </div>
+                </button>
+            </div>
+            <div class="col-sm-8 p-0">
+
+                <div class="d-flex flex-row bg-light border-1 p-2">
+                    <label class="form-label p-1" for="img_width">width:</label>
+                    <input type="number" id="img_width" placeholder="1000">
+                    <label class="form-label p-1" for="img_height">height:</label>
+                    <input type="number" id="img_height" placeholder="1000">
+                    <label class="form-label p-1" for="center_x">x:</label>
+                    <input type="number" id="center_x" placeholder="0">
+                    <label class="form-label p-1" for="center_y">y:</label>
+                    <input type="number" id="center_y" placeholder="0">
+
+                    <label class="form-label p-1" for="pixel_per_unit">scale:</label>
+                    <input type="number" id="pixel_per_unit" placeholder="100">
+
+                    <button type="button" class="btn btn-primary" id="draw_btn" onclick="draw()">Draw</button>
+                </div>
+                <img class="img-fluid" src="" alt="No img" id="graph_img">
+            </div>
+        </div>
+  </div>
+<script src="static/js/add_formula.js"></script>
+<script src="static/js/draw_graph.js"></script>
+{% endblock %}

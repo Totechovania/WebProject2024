@@ -17,7 +17,7 @@ def shift_code(text, level):
 
 
 def generate_graph_fun(formulas, variables):
-    with open('code_templates/graph_template.txt', 'rt',  encoding='utf') as f:
+    with open('GraphDrawer/code_templates/graph_template.txt', 'rt',  encoding='utf') as f:
         graph_template = f.read()
 
     code = f"def fun(x, y, {''.join(f'{e}, ' for e in variables.keys())} time=0):\n"
@@ -42,7 +42,7 @@ def generate_graph_fun(formulas, variables):
 def generate_vars_fun(variables):
     code = 'def fun(x, y, time=0):\n'
 
-    with open('code_templates/var_template.txt', 'rt',  encoding='utf') as f:
+    with open('GraphDrawer/code_templates/var_template.txt', 'rt',  encoding='utf') as f:
         var_template = f.read()
 
     for name, expression in variables.items():

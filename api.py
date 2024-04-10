@@ -1,6 +1,10 @@
+import base64
+from io import BytesIO
+
 import flask
 from data import db_session, graphs, users
 import datetime
+from GraphDrawer.GraphDrawer import GraphDrawer
 
 blueprint = flask.Blueprint(
     'api',
@@ -143,3 +147,34 @@ def open_user(user_id):
                 'name', 'email', 'password', 'created_date'))
         }
     )
+
+@blueprint.route('/api/draw', methods=['POST'])
+def draw():
+
+    json = flask.request.get_json()
+    print(json)
+    colors = json['colors']
+    for i in range(len(colors)):
+        colors[i] = hex_to_rgb(colors[i][1:])
+
+    drawer = GraphDrawer(int(json['width']),
+                         int(json['height']),
+                         1/float(json['pixel_per_unit']),
+                         float(json['center_x']),
+                         float(json['center_y']))
+    img = drawer.draw(json['formulas'], colors)
+
+    image_file = BytesIO()
+    img.save(image_file, format='PNG')
+    imagedata = image_file.getvalue()
+
+    return base64.b64encode(imagedata)
+
+
+def hex_to_rgb(hex):
+    rgb = []
+    for i in (0, 2, 4):
+        decimal = int(hex[i:i + 2], 16)
+        rgb.append(decimal)
+
+    return tuple(rgb)
