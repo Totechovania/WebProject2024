@@ -31,7 +31,7 @@ def graphs_page():
 
 @app.route('/new_graph', methods=['GET', 'PUT'])
 def new_graph_page():
-    return render_template('.html', title='Новый график')
+    return render_template('project_page.html', title='Новый график')
 
 
 @app.route('/settings', methods=['GET', 'POST'])

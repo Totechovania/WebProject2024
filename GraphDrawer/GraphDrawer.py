@@ -50,10 +50,7 @@ class GraphDrawer:
 
         return graph_array, cases
 
-    def draw(self, text: str, colors,  filename: str):
-        from time import time
-
-        start = time()
+    def draw(self, text: str, colors):
         graph_array, cases = self.calculate_graphs(text)
 
         color_i = 0
@@ -65,18 +62,7 @@ class GraphDrawer:
             im = graph_to_image(graph, mode, color)
             res = Image.alpha_composite(res, im)
 
-        res.save(filename)
-        end = time()
-        print(end-start)
+        return res
 
 
-
-if __name__ == '__main__':
-    a = GraphDrawer(img_w=1000, img_h=1000, units_per_pixel=0.005)
-    colors = (
-        (125, 125, 255),
-        (0, 0, 0),
-        (0, 0, 0)
-    )
-    a.draw('sin(x^3 * y^2) = cos(x^2 * y^3)', colors,  '1213.png')
 

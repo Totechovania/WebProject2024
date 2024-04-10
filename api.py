@@ -143,3 +143,9 @@ def open_user(user_id):
                 'name', 'email', 'password', 'created_date'))
         }
     )
+
+@blueprint.route('/api/draw', methods=['POST'])
+def draw():
+    json = flask.request.get_json()
+
+    drawer = GraphDrawer(img_w=json['img_w'], img_h=json['img_h'], units_per_pixel=json['units_per_pixel'], c_x=json['c_x'], c_y=json['c_y'])
