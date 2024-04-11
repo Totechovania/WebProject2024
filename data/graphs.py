@@ -1,11 +1,10 @@
 import datetime
-
 import sqlalchemy
-
 from data.db_session import SqlAlchemyBase
+from sqlalchemy_serializer import SerializerMixin
 
 
-class Graph(SqlAlchemyBase):
+class Graph(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'graphs'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
