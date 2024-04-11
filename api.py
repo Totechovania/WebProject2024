@@ -1,10 +1,10 @@
 import base64
 from io import BytesIO
-
 import flask
 from data import db_session, graphs, users
 import datetime
 from GraphDrawer.GraphDrawer import GraphDrawer
+from utilities.draw import hex_to_rgb
 
 blueprint = flask.Blueprint(
     'api',
@@ -130,7 +130,7 @@ def all_users():
     return flask.jsonify(
         {
             'users':
-                [item.to_dict(only=('name', 'email', 'password', 'created_date'))
+                [item.to_dict(only=('name', 'email', 'hashed_password', 'created_date'))
                  for item in user]
         }
     )
@@ -144,7 +144,7 @@ def open_user(user_id):
     return flask.jsonify(
         {
             'user': user.to_dict(only=(
-                'name', 'email', 'password', 'created_date'))
+                'name', 'email', 'hashed_password', 'created_date'))
         }
     )
 
@@ -159,7 +159,7 @@ def draw():
 
     drawer = GraphDrawer(int(json['width']),
                          int(json['height']),
-                         1/float(json['pixel_per_unit']),
+                         1 / float(json['pixel_per_unit']),
                          float(json['center_x']),
                          float(json['center_y']))
     img = drawer.draw(json['formulas'], colors)
@@ -169,12 +169,3 @@ def draw():
     imagedata = image_file.getvalue()
 
     return base64.b64encode(imagedata)
-
-
-def hex_to_rgb(hex):
-    rgb = []
-    for i in (0, 2, 4):
-        decimal = int(hex[i:i + 2], 16)
-        rgb.append(decimal)
-
-    return tuple(rgb)
