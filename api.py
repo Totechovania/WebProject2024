@@ -5,6 +5,7 @@ from data import db_session, graphs, users
 import datetime
 from GraphDrawer.GraphDrawer import GraphDrawer
 from utilities.draw import hex_to_rgb
+from flask_login import login_user, login_required, logout_user, current_user
 
 blueprint = flask.Blueprint(
     'api',
@@ -124,6 +125,7 @@ def all_graphs():
     )
 
 
+'''
 @blueprint.route('/api/all_users', methods=['GET'])
 def all_users():
     user = db_sess.query(users.User).all()
@@ -147,9 +149,11 @@ def open_user(user_id):
                 'name', 'email', 'hashed_password', 'created_date'))
         }
     )
+'''
 
 
 @blueprint.route('/api/draw', methods=['POST'])
+@login_required
 def draw():
     json = flask.request.get_json()
     print(json)
