@@ -21,20 +21,30 @@
   </div>
 </div>
 <header>
-    <nav class="navbar navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
         <div class="container-fluid">
-            <button class="btn btn-primary" type="button"  data-bs-toggle="offcanvas" data-bs-target="#offcanvas_settings">>Basic</button>
-            <a class="navbar-brand" href="#">Наше приложение</a>
-
-            {% if a1 %}
-                <a class="navbar-brand" href="/logout">{{ a2 }}</a>
+            <div class="collapse navbar-collapse" id="mynavbar">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="btn btn-primary " href="/new_graph">Новый график</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/social_media">Публикации</a>
+                    </li>
+                </ul>
+                <form class="d-flex">
+                    {% if current_user.is_authenticated %}
+                <a class="navbar-brand" href="/profile">{{ current_user.name }}</a>
+                <a class="btn btn-danger" href="/logout">Выход</a>
             {% else %}
-                <p>
-                    <a class="btn btn-primary " href="/sign_up">Зарегистрироваться</a>
-                    <a class="btn btn-success" href="/sign_in">Войти</a>
-                </p>
+                <a class="btn btn-primary " href="/sign_up">Зарегистрироваться</a>
+                <a class="btn btn-success" href="/sign_in">Войти</a>
             {% endif %}
+                </form>
+            </div>
         </div>
+
+
     </nav>
 </header>
 <!-- Begin page content -->
