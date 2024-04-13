@@ -177,6 +177,7 @@ def draw():
 
 @blueprint.route('/api/user_info', methods=['GET'])
 def user_info():
+    print(current_user.is_authenticated)
     if current_user.is_authenticated:
         return flask.jsonify(current_user.to_dict(only=(
             'id', 'name', 'email', 'created_date')))

@@ -2,8 +2,9 @@
 {% block content %}
 <div class="container-fluid p-0 border1">
     <dev class = "raw">
-        <div class = "col-sm-3 bg-light text-dark">
-            <img src="static/1213.png" id="user_avatar" class="img-thumbnail rounded-circle bg-light border-0" alt="" style="width: 100%; height: 100%;">
+        <div class = "col-sm-3 bg-light text-dark p-2">
+
+            <img src="/static/1213.png" id="user_avatar" class="img-thumbnail rounded-circle bg-light border-0" alt="" style="width: 100%; height: 100%;">
 
             <div class="container-fluid" id = "user_info_container">
             <div id="img_file_input" hidden="hidden">
@@ -32,10 +33,10 @@
                         <textarea class="form-control" id="user_about_input" style="height: 100px"></textarea>
                     </div>
                 </p>
-                <div class="d-flex flex-row bg-light p-1">
-                    <button type="button" class="btn btn-primary" onclick="normal_mode()"  hidden="hidden" id="save_btn">Сохранить</button>
-                    <button type="button" class="btn btn-secondary" onclick="normal_mode()" hidden="hidden" id="cancel_btn">Отменить</button>
-                    <button type="button" class="btn btn-secondary" onclick="redact_mode()" id="redact_btn">Редактировать</button>
+                <div class="d-flex flex-row-reverse bg-light p-1">
+                    <button type="button" class="btn btn-primary p-2" onclick="normal_mode()"  hidden="hidden" id="save_btn">Сохранить</button>
+                    <button type="button" class="btn btn-secondary p-2" onclick="normal_mode()" hidden="hidden" id="cancel_btn">Отменить</button>
+                    <button type="button" class="btn btn-secondary p-2" onclick="redact_mode()" id="redact_btn">Редактировать</button>
                 </div>
                 <script>
                     function normal_mode() {
@@ -53,6 +54,7 @@
                         document.getElementById('redact_btn').hidden = true;
                         document.getElementById('user_about_container').hidden = true;
                         document.getElementById('user_about_input_container').hidden = false;
+                        document.getElementById('user_about_input').value = document.getElementById('user_about').innerHTML;
                         document.getElementById('img_file_input').hidden = false;
                     }
 
@@ -65,5 +67,9 @@
     </dev>
 
 </div>
-<script src="static/js/user_info.js"></script>
+<script>let id = {{id}}
+alert(id)
+</script>
+
+<script src="/static/js/user_info.js"></script>
 {% endblock %}
