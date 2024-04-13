@@ -4,7 +4,12 @@
     <dev class = "raw">
         <div class = "col-sm-3 bg-light text-dark">
             <img src="static/1213.png" id="user_avatar" class="img-thumbnail rounded-circle bg-light border-0" alt="" style="width: 100%; height: 100%;">
+
             <div class="container-fluid" id = "user_info_container">
+            <div id="img_file_input" hidden="hidden">
+                <label for="formFile" class="form-label" >Загрузите аватарку:</label>
+                <input class="form-control" type="file" id="formFile">
+            </div>
             <h1 id = "user_name">
             </h1>
                 <p>
@@ -18,11 +23,42 @@
                 </p>
 
                 <p>
-                    <label class="form-label p-1" for="user_about">About:</label>
-                    <label id = "user_about"></label>
+                    <div id = "user_about_container">
+                        <label class="form-label p-1" for="user_about">About:</label>
+                        <label id = "user_about"></label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3" hidden="hidden" id="user_about_input_container">
+                        <label class="form-label p-1" for="user_about_input">About:</label>
+                        <textarea class="form-control" id="user_about_input" style="height: 100px"></textarea>
+                    </div>
                 </p>
+                <div class="d-flex flex-row bg-light p-1">
+                    <button type="button" class="btn btn-primary" onclick="normal_mode()"  hidden="hidden" id="save_btn">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" onclick="normal_mode()" hidden="hidden" id="cancel_btn">Отменить</button>
+                    <button type="button" class="btn btn-secondary" onclick="redact_mode()" id="redact_btn">Редактировать</button>
+                </div>
+                <script>
+                    function normal_mode() {
+                        document.getElementById('save_btn').hidden = true;
+                        document.getElementById('cancel_btn').hidden = true;
+                        document.getElementById('redact_btn').hidden = false;
+                        document.getElementById('user_about_container').hidden = false;
+                        document.getElementById('user_about_input_container').hidden = true;
+                        document.getElementById('img_file_input').hidden = true;
+                    }
+
+                    function redact_mode() {
+                        document.getElementById('save_btn').hidden = false;
+                        document.getElementById('cancel_btn').hidden = false;
+                        document.getElementById('redact_btn').hidden = true;
+                        document.getElementById('user_about_container').hidden = true;
+                        document.getElementById('user_about_input_container').hidden = false;
+                        document.getElementById('img_file_input').hidden = false;
+                    }
+
+                </script>
             </div>
-            <div class="col-sm-8 p-0">
+            <div class="col-sm-9 p-0">
 
             </div>
         </div>
