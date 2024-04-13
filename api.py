@@ -166,10 +166,12 @@ def draw():
                          1 / float(json['pixel_per_unit']),
                          float(json['center_x']),
                          float(json['center_y']))
-    img = drawer.draw(json['formulas'], colors)
+    try:
+        img = drawer.draw(json['formulas'], colors)
 
-    image_file = BytesIO()
-    img.save(image_file, format='PNG')
-    imagedata = image_file.getvalue()
-
-    return base64.b64encode(imagedata)
+        image_file = BytesIO()
+        img.save(image_file, format='PNG')
+        imagedata = image_file.getvalue()
+        return flask.make_response(base64.b64encode(imagedata), 200)
+    except SyntaxError:
+        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)

@@ -34,7 +34,7 @@
                 </ul>
                 <form class="d-flex">
                     {% if current_user.is_authenticated %}
-                <a class="navbar-brand" href="/profile">{{ current_user.name }}</a>
+                <a class="navbar-brand" href = "" id = "username">{{ current_user.name }}</a>
                 <a class="btn btn-danger" href="/logout">Выход</a>
             {% else %}
                 <a class="btn btn-primary " href="/sign_up">Зарегистрироваться</a>
@@ -43,8 +43,6 @@
                 </form>
             </div>
         </div>
-
-
     </nav>
 </header>
 <!-- Begin page content -->

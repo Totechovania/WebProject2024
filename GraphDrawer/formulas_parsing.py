@@ -1,5 +1,5 @@
 def parse_formulas(lst, colors):
-    def_vars = ('x', 'y')
+    def_vars = ('x', 'y', 'e', 'pi')
     formulas = []
     cases = []
     variables = {}

@@ -1,8 +1,6 @@
 try:
     {name} = {expression}
-except ZeroDivisionError:
-    {name} = None
-except ValueError:
+except Exception:
     {name} = None
 if type({name}) == complex:
     {name} = None
