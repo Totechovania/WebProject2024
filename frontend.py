@@ -8,6 +8,7 @@ from data.users import User
 from data import db_session
 
 app, login_manager = init_all()
+db_sess = db_session.create_session()
 
 
 @app.route('/logout')
@@ -19,7 +20,6 @@ def logout():
 
 @login_manager.user_loader
 def load_user(user_id):
-    db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
 
@@ -28,7 +28,6 @@ def load_user(user_id):
 def add_news():
     form = NewsForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
         news = News()
         news.title = form.title.data
         news.content = form.content.data
@@ -46,7 +45,6 @@ def add_news():
 def edit_news(id):
     form = NewsForm()
     if request.method == "GET":
-        db_sess = db_session.create_session()
         news = db_sess.query(News).filter(News.id == id,
                                           News.user == current_user
                                           ).first()
@@ -57,7 +55,6 @@ def edit_news(id):
         else:
             abort(404)
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
         news = db_sess.query(News).filter(News.id == id,
                                           News.user == current_user
                                           ).first()
@@ -78,7 +75,6 @@ def edit_news(id):
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def news_delete(id):
-    db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.id == id,
                                       News.user == current_user
                                       ).first()
@@ -98,7 +94,6 @@ def sign_up_page():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Пароли не совпадают")
-        db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.email == form.email.data).first():
             return render_template('register.html', title='Регистрация',
                                    form=form,
@@ -118,7 +113,6 @@ def sign_up_page():
 def sign_in_page():
     form = LoginForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
@@ -135,11 +129,13 @@ def main_page():
 
 
 @app.route('/profile/<int:id>', methods=['GET'])
+@login_required
 def profile_page(id):
     return render_template('.html', title='Профиль')
 
 
 @app.route('/graphs', methods=['GET'])
+@login_required
 def graphs_page():
     return render_template('.html', title='Графики')
 
@@ -150,6 +146,7 @@ def new_graph_page():
 
 
 @app.route('/settings', methods=['GET', 'POST'])
+@login_required
 def settings_page():
     return render_template('.html', title='Настройки')
 
@@ -161,7 +158,6 @@ def projects_page():
 
 @app.route('/', methods=['GET'])
 def social_media_main_page():
-    db_sess = db_session.create_session()
     if current_user.is_authenticated:
         news = db_sess.query(News).filter(
             (News.user == current_user) | (News.is_private != True))
