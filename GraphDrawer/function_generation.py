@@ -52,7 +52,7 @@ def generate_vars_fun(variables):
 
     code += ' ' * 4 + f"return {', '.join(variables.keys())}"
 
-    loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg, 'log': log, 'pi': pi, 'e': e}
+    loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg, 'log': log, 'pi': pi, 'e': e,}
 
 
     code = compile(code, '<string>', 'exec')

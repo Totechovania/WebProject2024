@@ -7,7 +7,7 @@ def parse_formulas(lst, colors):
     while '' in lst:
         lst.remove('')
     for line, color in zip(lst, colors):
-        line = line.replace(' ', '').replace('^', '**')
+        line = line.replace(' ', '').replace('^', '**').replace('exit', '')
         var = False
         case = None
         f1, f2 = None, None
