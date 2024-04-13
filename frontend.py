@@ -136,7 +136,7 @@ def main_page():
 
 @app.route('/profile/<id>', methods=['GET'])
 def profile(id):
-    return render_template('profile.html', title='Профиль', id=current_user.id)
+    return render_template('profile.html', title='Профиль', usr_id=id)
 
 
 @app.route('/profile', methods=['GET'])
