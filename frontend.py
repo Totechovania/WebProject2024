@@ -1,3 +1,5 @@
+import json
+
 import flask
 
 from utilities.system import init_app
@@ -60,7 +62,10 @@ def sign_up_page():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Пароли не совпадают")
-        if post(f'http://127.0.0.1:2000/api/sign_up', json=flask.jsonify(form)).status_code == 409:
+        print(form.data)
+        response = post(f'http://127.0.0.1:2000/api/sign_up', json=json.dumps(form.data))
+        print(response)
+        if response.status_code == 409:
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Такой пользователь уже есть")
@@ -72,7 +77,7 @@ def sign_up_page():
 def sign_in_page():
     form = LoginForm()
     if form.validate_on_submit():
-        response = post(f'http://127.0.0.1:2000/api/sign_in', json=flask.jsonify(form))
+        response = post(f'http://127.0.0.1:2000/api/sign_in', json=json.dumps(form.data))
         if response.status_code == 401:
             return render_template('login.html',
                                    message="Неправильный логин или пароль",
@@ -115,9 +120,13 @@ def projects_page():
 
 @app.route('/social_media', methods=['GET'])
 def social_media_main_page():
-    response = get(f'http://127.0.0.1:2000/api/all_news').json()
-    print(response['news'])
-    return render_template("social_media.html", news=response['news'])
+    data = []
+    response = json.loads(get(f'http://127.0.0.1:2000/api/all_news').json()['news'])
+    for el in response:
+        user = get(f'http://127.0.0.1:2000/api/open_user/{el["user_id"]}').json()
+        data.append(el + user)
+    print(data)
+    return render_template("social_media.html", news=json.loads(response['news']))
 
 
 @app.errorhandler(404)

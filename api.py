@@ -1,14 +1,15 @@
 import base64
-import io
-from io import BytesIO
-import flask
-from data import db_session, graphs, users, news
 import datetime
-from GraphDrawer.GraphDrawer import GraphDrawer
-from utilities.draw import hex_to_rgb
-from flask_login import login_user, login_required, logout_user, current_user
-from utilities.system import get_manager
 import json
+from io import BytesIO
+
+import flask
+from flask_login import login_user, login_required, logout_user, current_user
+
+from GraphDrawer.GraphDrawer import GraphDrawer
+from data import db_session, graphs, users, news
+from utilities.draw import hex_to_rgb
+from utilities.system import get_manager
 
 blueprint = flask.Blueprint(
     'api',
@@ -34,21 +35,22 @@ def logout():
 
 @blueprint.route('/api/sign_up', methods=['POST'])
 def sign_up():
-    if not flask.request.json:
+    data = json.loads(flask.request.json)
+    if not data:
         return flask.make_response(flask.jsonify({'reason': 'Empty request'}), 400)
-    elif not all(key in flask.request.json for key in
+    elif not all(key in data for key in
                  ['name', 'email', 'password']):
         return flask.make_response(flask.jsonify({'reason': 'Bad request'}), 400)
-    user = db_sess.query(users.User).filter(users.User.email == flask.request.json['email']).first()
+    user = db_sess.query(users.User).filter(users.User.email == data['email']).first()
     if user:
         return flask.make_response(flask.jsonify({'reason': 'User already exists'}), 409)
     new_user = users.User(
-        name=flask.request.json['name'],
-        email=flask.request.json['email'],
-        hashed_password=flask.request.json['password'],
+        name=data['name'],
+        email=data['email'],
+        hashed_password=data['password'],
         created_date=datetime.datetime.now()
     )
-    new_user.set_password(flask.request.json['password'])
+    new_user.set_password(data['password'])
     db_sess.add(new_user)
     db_sess.commit()
     return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
@@ -56,16 +58,17 @@ def sign_up():
 
 @blueprint.route('/api/sign_in', methods=['POST'])
 def sign_in():
-    if not flask.request.json:
+    data = json.loads(flask.request.json)
+    if not data:
         return flask.make_response(flask.jsonify({'reason': 'Empty request'}), 400)
-    elif not all(key in flask.request.json for key in
+    elif not all(key in data for key in
                  ['email', 'password']):
         return flask.make_response(flask.jsonify({'reason': 'Bad request'}), 400)
-    user = db_sess.query(users.User).filter(users.User.email == flask.request.json['email']).first()
+    user = db_sess.query(users.User).filter(users.User.email == data['email']).first()
     if not user:
         return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
-    if user and user.check_password(flask.request.json['password']):
-        login_user(user, remember=flask.request.json['remember_me'])
+    if user and user.check_password(data['password']):
+        login_user(user, remember=data['remember_me'])
         return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
     return flask.make_response(flask.jsonify({'reason': 'Incorrect data'}), 401)
 
@@ -194,10 +197,13 @@ def news_delete(news_id):
 @blueprint.route('/api/all_news', methods=['GET'])
 def all_news():
     if current_user.is_authenticated:
-        new = db_sess.query(news.News).filter(
-            (news.News.user == current_user) | (news.News.is_private != True))
+        new = json.dumps(list(map(lambda x: x.to_dict(
+            only=('id', 'title', 'content', 'created_date', 'is_private', 'user_id')), db_sess.query(news.News).filter(
+            (news.News.user == current_user) | (news.News.is_private != True)))))
     else:
-        new = db_sess.query(news.News).filter(news.News.is_private != True)
+        new = json.dumps(list(map(lambda x: x.to_dict(
+            only=('id', 'title', 'content', 'created_date', 'is_private', 'user_id')),
+                                  db_sess.query(news.News).filter(news.News.is_private != True))))
     return flask.make_response(flask.jsonify({'status': 'OK', 'news': new}), 200)
 
 
@@ -212,20 +218,20 @@ def all_users():
                  for item in user]
         }
     )
+'''
 
 
 @blueprint.route('/api/open_user/<int:user_id>', methods=['GET'])
 def open_user(user_id):
     user = db_sess.query(users.User).get(user_id)
     if not user:
-        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+        return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
     return flask.jsonify(
         {
             'user': user.to_dict(only=(
-                'name', 'email', 'hashed_password', 'created_date'))
+                'name', 'created_date'))
         }
     )
-'''
 
 
 @blueprint.route('/api/draw', methods=['POST'])
