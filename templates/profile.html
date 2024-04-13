@@ -1,23 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container-fluid p-0 border1">
+    <dev class = "raw">
+        <div class = "col-sm-3 bg-light text-dark">
+            <img src="static/1213.png" id="user_avatar" class="img-thumbnail rounded-circle bg-light border-0" alt="" style="width: 100%; height: 100%;">
+            <div class="container-fluid" id = "user_info_container">
+            <h1 id = "user_name">
+            </h1>
+                <p>
+                    <label class="form-label p-1" for="user_email">Email:</label>
+                    <label id = "user_email"></label>
+                </p>
 
-        <h1 id = "user_name">
-        </h1>
-            <p>
-                <label class="form-label p-1" for="user_email">Email:</label>
-                <label id = "user_email"></label>
-            </p>
+                <p>
+                    <label class="form-label p-1" for="user_created_date">Created date:</label>
+                    <label id = "user_created_date"></label>
+                </p>
 
-            <p>
-                <label class="form-label p-1" for="user_created_date">Created date:</label>
-                <label id = "user_created_date"></label>
-            </p>
+                <p>
+                    <label class="form-label p-1" for="user_about">About:</label>
+                    <label id = "user_about"></label>
+                </p>
+            </div>
+            <div class="col-sm-8 p-0">
 
-            <p>
-                <label class="form-label p-1" for="user_about">About:</label>
-                <label id = "user_about"></label>
-            </p>
+            </div>
+        </div>
+    </dev>
 
 </div>
 <script src="static/js/user_info.js"></script>
