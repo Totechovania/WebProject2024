@@ -2,28 +2,21 @@ import base64
 import datetime
 import json
 from io import BytesIO
-
 import flask
-from flask_login import login_user, login_required, logout_user, current_user
-
+from flask_login import login_user, login_required, logout_user
+from requests import get, post, delete
+from global_param import db_sess
 from GraphDrawer.GraphDrawer import GraphDrawer
-from data import db_session, graphs, users, news
+from data import graphs, users
+from data.news import News
+from frontend import current_user
 from utilities.draw import hex_to_rgb
-from utilities.system import get_manager
 
 blueprint = flask.Blueprint(
     'api',
     __name__,
     template_folder='templates'
 )
-
-db_sess = db_session.create_session()
-login_manager = get_manager()
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return db_sess.query(users.User).get(user_id)
 
 
 @blueprint.route('/api/logout', methods=['GET'])
@@ -69,6 +62,7 @@ def sign_in():
         return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
     if user and user.check_password(data['password']):
         login_user(user, remember=data['remember_me'])
+        print(current_user)
         return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
     return flask.make_response(flask.jsonify({'reason': 'Incorrect data'}), 401)
 
@@ -154,15 +148,18 @@ def all_graphs():
 
 
 @blueprint.route('/api/add_news', methods=['POST'])
-@login_required
+# @login_required
 def add_news():
-    new = news.News()
-    new.title = flask.request.json['title']
-    new.content = flask.request.json['content']
-    new.is_private = flask.request.json['is_private']
-    current_user.news.append(new)
+    request = json.loads(flask.request.json)
+    news = News()
+    news.title = request['title']
+    news.content = request['content']
+    news.is_private = request['is_private']
+    current_user.news.append(news)
     db_sess.merge(current_user)
     db_sess.commit()
+    print(flask.request.json, 345)
+    print(current_user, 13131)
     return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
 
 
@@ -170,9 +167,9 @@ def add_news():
 @login_required
 def edit_news(news_id):
     if flask.request.method == "GET":
-        return db_sess.query(news.News).filter(news.News.id == news_id, news.News.user == current_user).first()
-    new = db_sess.query(news.News).filter(news.News.id == news_id,
-                                          news.News.user == current_user).first()
+        return db_sess.query(News).filter(News.id == news_id, News.user == current_user).first()
+    new = db_sess.query(News).filter(News.id == news_id,
+                                     News.user == current_user).first()
     if not new:
         return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
     new.title = flask.request.json['title']
@@ -185,8 +182,8 @@ def edit_news(news_id):
 @blueprint.route('/api/news_delete/<int:news_id>', methods=['DELETE'])
 @login_required
 def news_delete(news_id):
-    new = db_sess.query(news.News).filter(news.News.id == news_id,
-                                          news.News.user == current_user).first()
+    new = db_sess.query(News).filter(News.id == news_id,
+                                     News.user == current_user).first()
     if not new:
         return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
     db_sess.delete(new)
@@ -198,12 +195,12 @@ def news_delete(news_id):
 def all_news():
     if current_user.is_authenticated:
         new = json.dumps(list(map(lambda x: x.to_dict(
-            only=('id', 'title', 'content', 'created_date', 'is_private', 'user_id')), db_sess.query(news.News).filter(
-            (news.News.user == current_user) | (news.News.is_private != True)))))
+            only=('id', 'title', 'content', 'created_date', 'is_private', 'user_id')), db_sess.query(News).filter(
+            (News.user == current_user) | (News.is_private != True)))))
     else:
         new = json.dumps(list(map(lambda x: x.to_dict(
             only=('id', 'title', 'content', 'created_date', 'is_private', 'user_id')),
-                                  db_sess.query(news.News).filter(news.News.is_private != True))))
+                                  db_sess.query(News).filter(News.is_private != True))))
     return flask.make_response(flask.jsonify({'status': 'OK', 'news': new}), 200)
 
 
@@ -227,6 +224,7 @@ def open_user(user_id):
     if not user:
         return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
     # print(current_user.
+    print(current_user.is_authenticated)
     current_user_data = {'is_authenticated': current_user.is_authenticated}
     if current_user.is_authenticated:
         current_user_data['id'] = current_user.id
