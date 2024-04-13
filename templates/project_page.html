@@ -38,4 +38,10 @@
   </div>
 <script src="static/js/add_formula.js"></script>
 <script src="static/js/draw_graph.js"></script>
+<script>
+window.addEventListener('beforeunload', function (e) {
+    e.preventDefault();
+    e.returnValue = 'AAAA';
+});
+</script>
 {% endblock %}

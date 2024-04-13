@@ -134,8 +134,10 @@ def main_page():
     return redirect('/social_media')
 
 
-@app.route('/profile/<int:id>', methods=['GET'])
-def profile_page(id):
+@app.route('/profile', methods=['GET'])
+def profile():
+    if not current_user.is_authenticated:
+        return redirect('/sign_in')
     return render_template('profile.html', title='Профиль')
 
 

@@ -1,7 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container-fluid xl" id="user_info">
+<div class="container-fluid p-0 border1">
+
+        <h1 id = "user_name">
+        </h1>
+            <p>
+                <label class="form-label p-1" for="user_email">Email:</label>
+                <label id = "user_email"></label>
+            </p>
+
+            <p>
+                <label class="form-label p-1" for="user_created_date">Created date:</label>
+                <label id = "user_created_date"></label>
+            </p>
+
+            <p>
+                <label class="form-label p-1" for="user_about">About:</label>
+                <label id = "user_about"></label>
+            </p>
+
 </div>
-
-
+<script src="static/js/user_info.js"></script>
 {% endblock %}

@@ -153,10 +153,8 @@ def open_user(user_id):
 
 
 @blueprint.route('/api/draw', methods=['POST'])
-@login_required
 def draw():
     json = flask.request.get_json()
-    print(json)
     colors = json['colors']
     for i in range(len(colors)):
         colors[i] = hex_to_rgb(colors[i][1:])
@@ -175,3 +173,12 @@ def draw():
         return flask.make_response(base64.b64encode(imagedata), 200)
     except SyntaxError:
         return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
+
+
+@blueprint.route('/api/user_info', methods=['GET'])
+def user_info():
+    if current_user.is_authenticated:
+        return flask.jsonify(current_user.to_dict(only=(
+            'id', 'name', 'email', 'created_date')))
+    else:
+        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
