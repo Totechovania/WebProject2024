@@ -1,12 +1,12 @@
 import json
 
 import flask
-
-from utilities.system import init_app
 from flask import redirect, render_template, abort, request
-from forms.user import RegisterForm, LoginForm
-from forms.news import NewsForm
 from requests import get, post, delete
+
+from forms.news import NewsForm
+from forms.user import RegisterForm, LoginForm
+from utilities.system import init_app
 
 app = init_app()
 
@@ -124,9 +124,9 @@ def social_media_main_page():
     response = json.loads(get(f'http://127.0.0.1:2000/api/all_news').json()['news'])
     for el in response:
         user = get(f'http://127.0.0.1:2000/api/open_user/{el["user_id"]}').json()
-        data.append(el + user)
-    print(data)
-    return render_template("social_media.html", news=json.loads(response['news']))
+        user.update(el)
+        data.append(user)
+    return render_template("social_media.html", news=data)
 
 
 @app.errorhandler(404)

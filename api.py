@@ -226,10 +226,15 @@ def open_user(user_id):
     user = db_sess.query(users.User).get(user_id)
     if not user:
         return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
+    # print(current_user.
+    current_user_data = {'is_authenticated': current_user.is_authenticated}
+    if current_user.is_authenticated:
+        current_user_data['id'] = current_user.id
     return flask.jsonify(
         {
             'user': user.to_dict(only=(
-                'name', 'created_date'))
+                'name', 'created_date')),
+            'current_user': current_user_data
         }
     )
 
@@ -238,7 +243,6 @@ def open_user(user_id):
 @login_required
 def draw():
     json = flask.request.get_json()
-    print(json)
     colors = json['colors']
     for i in range(len(colors)):
         colors[i] = hex_to_rgb(colors[i][1:])
