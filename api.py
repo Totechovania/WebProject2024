@@ -1,11 +1,14 @@
 import base64
+import io
 from io import BytesIO
 import flask
-from data import db_session, graphs, users
+from data import db_session, graphs, users, news
 import datetime
 from GraphDrawer.GraphDrawer import GraphDrawer
 from utilities.draw import hex_to_rgb
 from flask_login import login_user, login_required, logout_user, current_user
+from utilities.system import get_manager
+import json
 
 blueprint = flask.Blueprint(
     'api',
@@ -14,70 +17,89 @@ blueprint = flask.Blueprint(
 )
 
 db_sess = db_session.create_session()
+login_manager = get_manager()
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db_sess.query(users.User).get(user_id)
+
+
+@blueprint.route('/api/logout', methods=['GET'])
+@login_required
+def logout():
+    logout_user()
+    return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
 
 
 @blueprint.route('/api/sign_up', methods=['POST'])
 def sign_up():
     if not flask.request.json:
-        return flask.make_response(flask.jsonify({'error': 'Empty request'}), 400)
+        return flask.make_response(flask.jsonify({'reason': 'Empty request'}), 400)
     elif not all(key in flask.request.json for key in
                  ['name', 'email', 'password']):
-        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
+        return flask.make_response(flask.jsonify({'reason': 'Bad request'}), 400)
+    user = db_sess.query(users.User).filter(users.User.email == flask.request.json['email']).first()
+    if user:
+        return flask.make_response(flask.jsonify({'reason': 'User already exists'}), 409)
     new_user = users.User(
         name=flask.request.json['name'],
         email=flask.request.json['email'],
-        password=flask.request.json['password'],
+        hashed_password=flask.request.json['password'],
         created_date=datetime.datetime.now()
     )
+    new_user.set_password(flask.request.json['password'])
     db_sess.add(new_user)
     db_sess.commit()
-    return flask.jsonify({'id': new_user.id})
+    return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
 
 
 @blueprint.route('/api/sign_in', methods=['POST'])
 def sign_in():
     if not flask.request.json:
-        return flask.make_response(flask.jsonify({'error': 'Empty request'}), 400)
+        return flask.make_response(flask.jsonify({'reason': 'Empty request'}), 400)
     elif not all(key in flask.request.json for key in
                  ['email', 'password']):
-        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
-    users_db = db_sess.query(users.User).all()
-    if not users_db:
-        return flask.make_response(flask.jsonify({'error': 'Empty data_base'}), 404)
-    for user in users_db:
-        if flask.request.json['email'] == user['email'] and user['password'] == flask.request.json['password']:
-            ...
-            return flask.jsonify({'success': 'OK'})
-        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+        return flask.make_response(flask.jsonify({'reason': 'Bad request'}), 400)
+    user = db_sess.query(users.User).filter(users.User.email == flask.request.json['email']).first()
+    if not user:
+        return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
+    if user and user.check_password(flask.request.json['password']):
+        login_user(user, remember=flask.request.json['remember_me'])
+        return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
+    return flask.make_response(flask.jsonify({'reason': 'Incorrect data'}), 401)
 
 
 @blueprint.route('/api/delete_graph<int:graph_id>', methods=['DELETE'])
+@login_required
 def delete_graph(graph_id):
     graph = db_sess.query(users.User).get(graph_id)
     if not graph:
-        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+        return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
     db_sess.delete(graph)
     db_sess.commit()
-    return flask.jsonify({'success': 'OK'})
+    return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
 
 
 @blueprint.route('/api/delete_user<int:user_id>', methods=['DELETE'])
+@login_required
 def delete_user(user_id):
     user = db_sess.query(users.User).get(user_id)
     if not user:
-        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+        return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
     db_sess.delete(user)
     db_sess.commit()
-    return flask.jsonify({'success': 'OK'})
+    return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
 
 
 @blueprint.route('/api/new_graph', methods=['POST'])
+@login_required
 def new_graph():
     if not flask.request.json:
-        return flask.make_response(flask.jsonify({'error': 'Empty request'}), 400)
+        return flask.make_response(flask.jsonify({'reason': 'Empty request'}), 400)
     elif not all(key in flask.request.json for key in
                  ['name', 'function', 'created_date', 'private']):
-        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
+        return flask.make_response(flask.jsonify({'reason': 'Bad request'}), 400)
     graph = graphs.Graph(
         name=flask.request.json['name'],
         function=flask.request.json['function'],
@@ -86,14 +108,15 @@ def new_graph():
     )
     db_sess.add(graph)
     db_sess.commit()
-    return flask.jsonify({'id': graph.id})
+    return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
 
 
 @blueprint.route('/api/open_graph/<int:graph_id>', methods=['GET'])
+@login_required
 def open_graph(graph_id):
     graph = db_sess.query(graphs.Graph).get(graph_id)
     if not graph:
-        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+        return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
     return flask.jsonify(
         {
             'graph': graph.to_dict(only=(
@@ -103,17 +126,19 @@ def open_graph(graph_id):
 
 
 @blueprint.route('/api/update_graph<int:graph_id>', methods=['PUT'])
+@login_required
 def update_graph(graph_id):
     graph = db_sess.query(graphs.Graph).get(graph_id)
     req = flask.request.json
     if not graph:
-        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+        return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
     db_sess.query(graphs.Graph).update(graph_id, req)
     db_sess.commit()
-    return flask.jsonify({'success': 'OK'})
+    return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
 
 
 @blueprint.route('/api/all_graphs', methods=['GET'])
+@login_required
 def all_graphs():
     graph = db_sess.query(graphs.Graph).all()
     return flask.jsonify(
@@ -123,6 +148,57 @@ def all_graphs():
                  for item in graph]
         }
     )
+
+
+@blueprint.route('/api/add_news', methods=['POST'])
+@login_required
+def add_news():
+    new = news.News()
+    new.title = flask.request.json['title']
+    new.content = flask.request.json['content']
+    new.is_private = flask.request.json['is_private']
+    current_user.news.append(new)
+    db_sess.merge(current_user)
+    db_sess.commit()
+    return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
+
+
+@blueprint.route('/api/edit_news/<int:news_id>', methods=['GET', 'POST'])
+@login_required
+def edit_news(news_id):
+    if flask.request.method == "GET":
+        return db_sess.query(news.News).filter(news.News.id == news_id, news.News.user == current_user).first()
+    new = db_sess.query(news.News).filter(news.News.id == news_id,
+                                          news.News.user == current_user).first()
+    if not new:
+        return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
+    new.title = flask.request.json['title']
+    new.content = flask.request.json['content']
+    new.is_private = flask.request.json['is_private']
+    db_sess.commit()
+    return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
+
+
+@blueprint.route('/api/news_delete/<int:news_id>', methods=['DELETE'])
+@login_required
+def news_delete(news_id):
+    new = db_sess.query(news.News).filter(news.News.id == news_id,
+                                          news.News.user == current_user).first()
+    if not new:
+        return flask.make_response(flask.jsonify({'reason': 'Not found'}), 404)
+    db_sess.delete(new)
+    db_sess.commit()
+    return flask.make_response(flask.jsonify({'status': 'OK'}), 200)
+
+
+@blueprint.route('/api/all_news', methods=['GET'])
+def all_news():
+    if current_user.is_authenticated:
+        new = db_sess.query(news.News).filter(
+            (news.News.user == current_user) | (news.News.is_private != True))
+    else:
+        new = db_sess.query(news.News).filter(news.News.is_private != True)
+    return flask.make_response(flask.jsonify({'status': 'OK', 'news': new}), 200)
 
 
 '''

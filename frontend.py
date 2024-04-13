@@ -1,55 +1,35 @@
-from utilities.system import init_all
-from flask import redirect, url_for, render_template, abort, request
-from flask_login import login_user, login_required, logout_user, current_user
+import flask
+
+from utilities.system import init_app
+from flask import redirect, render_template, abort, request
 from forms.user import RegisterForm, LoginForm
 from forms.news import NewsForm
-from data.news import News
-from data.users import User
-from data import db_session
+from requests import get, post, delete
 
-app, login_manager = init_all()
+app = init_app()
 
 
 @app.route('/logout')
-@login_required
 def logout():
-    logout_user()
+    get('http://127.0.0.1:2000/api/logout')
     return redirect("/")
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
-
-
-@app.route('/news', methods=['GET', 'POST'])
-@login_required
+@app.route('/news', methods=['POST'])
 def add_news():
     form = NewsForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        news = News()
-        news.title = form.title.data
-        news.content = form.content.data
-        news.is_private = form.is_private.data
-        current_user.news.append(news)
-        db_sess.merge(current_user)
-        db_sess.commit()
+        post('http://127.0.0.1:2000/api/add_news', json=flask.jsonify(form))
         return redirect('/')
     return render_template('news.html', title='Добавление новости',
                            form=form)
 
 
-@app.route('/news/<int:id>', methods=['GET', 'POST'])
-@login_required
-def edit_news(id):
+@app.route('/news/<int:news_id>', methods=['GET', 'POST'])
+def edit_news(news_id):
     form = NewsForm()
     if request.method == "GET":
-        db_sess = db_session.create_session()
-        news = db_sess.query(News).filter(News.id == id,
-                                          News.user == current_user
-                                          ).first()
+        news = get(f'http://127.0.0.1:2000/api/edit_news/{news_id}').json()
         if news:
             form.title.data = news.title
             form.content.data = news.content
@@ -57,35 +37,17 @@ def edit_news(id):
         else:
             abort(404)
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        news = db_sess.query(News).filter(News.id == id,
-                                          News.user == current_user
-                                          ).first()
-        if news:
-            news.title = form.title.data
-            news.content = form.content.data
-            news.is_private = form.is_private.data
-            db_sess.commit()
-            return redirect('/')
-        else:
+        if post(f'http://127.0.0.1:2000/api/edit_news/{news_id}', json=flask.jsonify(form)).status_code == 404:
             abort(404)
+        return redirect('/')
     return render_template('news.html',
                            title='Редактирование новости',
-                           form=form
-                           )
+                           form=form)
 
 
-@app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
-@login_required
-def news_delete(id):
-    db_sess = db_session.create_session()
-    news = db_sess.query(News).filter(News.id == id,
-                                      News.user == current_user
-                                      ).first()
-    if news:
-        db_sess.delete(news)
-        db_sess.commit()
-    else:
+@app.route('/news_delete/<int:news_id>', methods=['GET', 'DELETE'])
+def news_delete(news_id):
+    if delete(f'http://127.0.0.1:2000/api/news_delete/{news_id}').status_code == 404:
         abort(404)
     return redirect('/')
 
@@ -98,18 +60,10 @@ def sign_up_page():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Пароли не совпадают")
-        db_sess = db_session.create_session()
-        if db_sess.query(User).filter(User.email == form.email.data).first():
+        if post(f'http://127.0.0.1:2000/api/sign_up', json=flask.jsonify(form)).status_code == 409:
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Такой пользователь уже есть")
-        user = User(
-            name=form.name.data,
-            email=form.email.data,
-        )
-        user.set_password(form.password.data)
-        db_sess.add(user)
-        db_sess.commit()
         return redirect('/sign_in')
     return render_template('register.html', title='Регистрация', form=form)
 
@@ -118,18 +72,18 @@ def sign_up_page():
 def sign_in_page():
     form = LoginForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.email == form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user, remember=form.remember_me.data)
-            return redirect("/")
-        return render_template('login.html',
-                               message="Неправильный логин или пароль",
-                               form=form)
+        response = post(f'http://127.0.0.1:2000/api/sign_in', json=flask.jsonify(form))
+        if response.status_code == 401:
+            return render_template('login.html',
+                                   message="Неправильный логин или пароль",
+                                   form=form)
+        if response.status_code == 404:
+            abort(404)
+        return redirect("/")
     return render_template('login.html', title='Авторизация', form=form)
 
 
-@app.route('/1', methods=['GET'])
+@app.route('/', methods=['GET'])
 def main_page():
     return redirect('/social_media')
 
@@ -159,15 +113,11 @@ def projects_page():
     return render_template('.html', title='Проекты')
 
 
-@app.route('/', methods=['GET'])
+@app.route('/social_media', methods=['GET'])
 def social_media_main_page():
-    db_sess = db_session.create_session()
-    if current_user.is_authenticated:
-        news = db_sess.query(News).filter(
-            (News.user == current_user) | (News.is_private != True))
-    else:
-        news = db_sess.query(News).filter(News.is_private != True)
-    return render_template("social_media.html", news=news)
+    response = get(f'http://127.0.0.1:2000/api/all_news').json()
+    print(response['news'])
+    return render_template("social_media.html", news=response['news'])
 
 
 @app.errorhandler(404)
