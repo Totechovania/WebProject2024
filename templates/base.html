@@ -20,7 +20,9 @@
                         <a class="nav-link text-white" href="/social_media">Публикации</a>
                     </li>
                 </ul>
-                <a href="/profile"><img src="" id="novbar_avatar" class="img-thumbnail rounded-circle bg-dark border-0"> </a>
+                {% if current_user.is_authenticated %}
+                    <a href="/profile"><img src="" id="novbar_avatar" class="img-thumbnail rounded-circle bg-dark border-0"> </a>
+                {% endif %}
                 <form class="d-flex">
                     {% if current_user.is_authenticated %}
 
@@ -41,9 +43,21 @@
 <script>
     let avatar = document.getElementById('novbar_avatar');
 
+    if (avatar){
+        let xmlhttp_avatar = new XMLHttpRequest();
+        xmlhttp_avatar.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                let avatar_img = JSON.parse(this.responseText)['avatar'];
+                avatar.src = "data:image/png;base64," + avatar_img;
+            }
+        }
 
-    avatar.src = "data:image/png;base64," + "{{ current_user.avatar }}";
-    avatar.style.width = avatar.style.height = document.getElementById('navbar_username').offsetWidth + 'px';
+        xmlhttp_avatar.open("GET", "/api/user_info/" + cur_user_id, true);
+        xmlhttp_avatar.send();
+
+        avatar.style.width = avatar.style.height = document.getElementById('navbar_username').offsetWidth + 'px';
+    }
+
 
 </script>
 <!-- Begin page content -->

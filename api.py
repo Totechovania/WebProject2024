@@ -32,7 +32,7 @@ def user_graphs(user_id):
                             for item in graph]
                 }
             )
-    graph = db_sess.query(graphs.Graph).filter((graphs.Graph.private != True) and (graphs.Graph.user_id == user_id))
+    graph = db_sess.query(graphs.Graph).filter(graphs.Graph.private != True, graphs.Graph.user_id == user_id)
     return flask.jsonify(
         {
             'graphs':

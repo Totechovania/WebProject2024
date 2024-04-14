@@ -93,7 +93,7 @@
         </div>
         <div class="col-sm-9 p-0">
                 <!-- Nav pills -->
-                  <ul class="nav nav-pills bg-light" role="tablist">
+                  <ul class="nav nav-tabs bg-light" role="tablist">
                     <li class="nav-item">
                       <a class="nav-link active" data-bs-toggle="pill" href="#graphs_tab">Графики</a>
                     </li>
@@ -105,8 +105,11 @@
                   <!-- Tab panes -->
                   <div class="tab-content">
                     <div id="graphs_tab" class="container tab-pane active"><br>
-                      <h3>HOME</h3>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+
+                        <div class="d-flex flex-wrap" id="graphs_container">
+
+                        </div>
+
                     </div>
                     <div id="news_tab" class="container tab-pane fade"><br>
                       <h3>Menu 1</h3>
@@ -115,11 +118,10 @@
                   </div>
         </div>
     </dev>
-
 </div>
 <script>let usr_id = {{usr_id}}</script>
 <script src="/static/js/user_info.js">
-    user_info(usr_id);
 </script>
-<script src="/static/js/add_graphs.js"></script>
+<script src="/static/js/add_graphs.js">
+</script>
 {% endblock %}

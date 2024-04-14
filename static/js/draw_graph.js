@@ -4,8 +4,8 @@ function draw() {
 
     let graphs_params = get_graph_params();
 
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
+    var xmlhttp_draw_graph = new XMLHttpRequest();
+    xmlhttp_draw_graph.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             document.getElementById('graph_img').src ="data:image/png;base64," +  this.responseText;
             btn.innerHTML = 'Draw';
@@ -15,8 +15,8 @@ function draw() {
         }
     };
 
-    xmlhttp.open("POST", "/api/draw", true);
-    xmlhttp.setRequestHeader("Content-type", "application/json");
-    xmlhttp.send( JSON.stringify(graphs_params) );
+    xmlhttp_draw_graph.open("POST", "/api/draw", true);
+    xmlhttp_draw_graph.setRequestHeader("Content-type", "application/json");
+    xmlhttp_draw_graph.send( JSON.stringify(graphs_params) );
 
 }

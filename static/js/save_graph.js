@@ -7,8 +7,8 @@ function save_graph() {
     let private = (document.getElementById('graph_privacy').value === "private");
     let graphs_params = get_graph_params();
 
-    xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
+    xmlhttp_save_graph = new XMLHttpRequest();
+    xmlhttp_save_graph.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             btn.innerHTML = 'Сохранить';
         } else if (this.readyState == 4 && this.status == 400) {
@@ -16,7 +16,7 @@ function save_graph() {
             btn.innerHTML = 'Сохранить';
         }
     }
-    xmlhttp.open("POST", "/api/new_graph", true);
-    xmlhttp.setRequestHeader("Content-type", "application/json");
-    xmlhttp.send( JSON.stringify({name, private, graphs_params}) );
+    xmlhttp_save_graph.open("POST", "/api/new_graph", true);
+    xmlhttp_save_graph.setRequestHeader("Content-type", "application/json");
+    xmlhttp_save_graph.send( JSON.stringify({name, private, graphs_params}) );
 }
