@@ -85,6 +85,7 @@ def new_graph():
         function=flask.request.json['function'],
         created_date=flask.request.json['created_date'],
         private=flask.request.json['private']
+
     )
     db_sess.add(graph)
     db_sess.commit()
