@@ -9,12 +9,12 @@
             <div class="container-fluid" id = "user_info_container">
             <div id="img_file_input" hidden="hidden">
                 <label for="formFile" class="form-label" >Загрузите аватарку:</label>
-                <input class="form-control" type="file" id="formFile">
+                <input class="form-control" type="file" id="formFile" accept="image/*">
             </div>
             <h1 id = "user_name">
             </h1>
                 <p>
-                    <label class="form-label p-1" for="user_email">Email:</label>
+                    <label class="form-label p-1" for="user_email" id = "user_email_label">Email:</label>
                     <label id = "user_email"></label>
                 </p>
 
@@ -34,7 +34,7 @@
                     </div>
                 </p>
                 <div class="d-flex flex-row-reverse bg-light p-1">
-                    <button type="button" class="btn btn-primary p-2" onclick="normal_mode()"  hidden="hidden" id="save_btn">Сохранить</button>
+                    <button type="button" class="btn btn-primary p-2" onclick="submit()"  hidden="hidden" id="save_btn">Сохранить</button>
                     <button type="button" class="btn btn-secondary p-2" onclick="normal_mode()" hidden="hidden" id="cancel_btn">Отменить</button>
                     <button type="button" class="btn btn-secondary p-2" onclick="redact_mode()" id="redact_btn">Редактировать</button>
                 </div>
@@ -58,6 +58,37 @@
                         document.getElementById('img_file_input').hidden = false;
                     }
 
+                    function submit() {
+                        let xmlhttp = new XMLHttpRequest();
+                        xmlhttp.onreadystatechange = function() {
+                            if (this.readyState == 4 && this.status == 200) {
+                                location.reload();
+                            }
+                        }
+                        xmlhttp.open("POST", "/api/update_user", true);
+                        let req = {id: usr_id}
+                        let img_file = document.getElementById('formFile').files[0];
+                        let about = document.getElementById('user_about_input').value;
+                        if (about) {
+                            req.about = about
+                        }
+
+                        xmlhttp.setRequestHeader("Content-type", "application/json", );
+                        if (img_file) {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(img_file);
+                            reader.onload = function() {
+                                req.avatar = reader.result;
+                                xmlhttp.send(JSON.stringify(req));
+                            }
+
+                        } else {
+                            xmlhttp.send(JSON.stringify(req));
+                        }
+
+
+                    }
+
                 </script>
             </div>
             <div class="col-sm-9 p-0">
@@ -67,6 +98,8 @@
     </dev>
 
 </div>
-<script>let usr_id = {{usr_id}};</script>
-<script src="/static/js/user_info.js"></script>
+<script>let usr_id = {{usr_id}}</script>
+<script src="/static/js/user_info.js">
+    user_info(usr_id);
+</script>
 {% endblock %}
