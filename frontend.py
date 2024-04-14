@@ -128,14 +128,19 @@ def main_page():
     return redirect('/social_media')
 
 
-@app.route('/profile/<int:id>', methods=['GET'])
-@login_required
-def profile_page(id):
-    return render_template('.html', title='Профиль')
+@app.route('/profile/<id>', methods=['GET'])
+def profile(id):
+    return render_template('profile.html', title='Профиль', usr_id=id)
+
+
+@app.route('/profile', methods=['GET'])
+def self_profile():
+    if not current_user.is_authenticated:
+        return redirect('/sign_in')
+    return redirect('/profile/' + str(current_user.id))
 
 
 @app.route('/graphs', methods=['GET'])
-@login_required
 def graphs_page():
     return render_template('.html', title='Графики')
 
@@ -146,7 +151,6 @@ def new_graph_page():
 
 
 @app.route('/settings', methods=['GET', 'POST'])
-@login_required
 def settings_page():
     return render_template('.html', title='Настройки')
 
@@ -158,6 +162,7 @@ def projects_page():
 
 @app.route('/', methods=['GET'])
 def social_media_main_page():
+    db_sess = db_session.create_session()
     if current_user.is_authenticated:
         news = db_sess.query(News).filter(
             (News.user == current_user) | (News.is_private != True))

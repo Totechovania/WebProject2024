@@ -1,4 +1,4 @@
-from math import cos, sin, tan, gamma
+from math import cos, sin, tan, gamma, log, pi, e
 
 
 def fac(x):
@@ -32,7 +32,7 @@ def generate_graph_fun(formulas, variables):
 
     code += f_return
 
-    loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg}
+    loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg, 'log': log, 'pi': pi, 'e': e}
 
     exec(code, loc)
 
@@ -52,9 +52,12 @@ def generate_vars_fun(variables):
 
     code += ' ' * 4 + f"return {', '.join(variables.keys())}"
 
-    loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg}
+    loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg, 'log': log, 'pi': pi, 'e': e,}
 
+
+    code = compile(code, '<string>', 'exec')
     exec(code, loc)
+
 
     return loc['fun']
 

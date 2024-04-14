@@ -36,6 +36,40 @@
             </div>
         </div>
   </div>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-bottom">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="mynavbar">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <label class="form-label text-white" for="graph_name">Название:</label>
+                </li>
+
+                <li class="nav-item">
+                    <input type="text" id="graph_name" placeholder="Новый график">
+                </li>
+
+                <li class="nav-item">
+                    <label class="form-label text-white" for="graph_privacy">Приватность:</label>
+                </li>
+
+                <li class="nav-item">
+                    <select id="graph_privacy">
+                        <option value="public">приватный</option>
+                        <option value="private">публичный</option>
+                    </select>
+                </li>
+            </ul>
+            <li class="nav-item">
+                <button type="button" class="btn btn-primary" id="save_btn" onclick="save_graph()">Сохранить</button>
+            </li>
+        </div>
+    </div>
+</nav>
 <script src="static/js/add_formula.js"></script>
 <script src="static/js/draw_graph.js"></script>
+<script>
+window.addEventListener('beforeunload', function (e) {
+    e.preventDefault();
+});
+</script>
 {% endblock %}

@@ -1,5 +1,5 @@
 def parse_formulas(lst, colors):
-    def_vars = ('x', 'y')
+    def_vars = ('x', 'y', 'e', 'pi')
     formulas = []
     cases = []
     variables = {}
@@ -7,7 +7,7 @@ def parse_formulas(lst, colors):
     while '' in lst:
         lst.remove('')
     for line, color in zip(lst, colors):
-        line = line.replace(' ', '').replace('^', '**')
+        line = line.replace(' ', '').replace('^', '**').replace('exit', '')
         var = False
         case = None
         f1, f2 = None, None

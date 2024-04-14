@@ -16,7 +16,7 @@ function draw() {
     let colors = [];
     for (let i = 0; i < id_count; i++) {
         let elem = document.getElementById(`input${i}`);
-        if (elem.value) {
+        if (elem) {
             formulas.push(elem.value);
             colors.push(document.getElementById(`color_input${i}`).value);
         }
@@ -26,6 +26,9 @@ function draw() {
     xmlhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             document.getElementById('graph_img').src ="data:image/png;base64," +  this.responseText;
+            btn.innerHTML = 'Draw';
+        } else if (this.readyState == 4 && this.status == 400) {
+            alert("Error: " + this.responseText);
             btn.innerHTML = 'Draw';
         }
     };

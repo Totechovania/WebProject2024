@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid p-0 border1">
+    <dev class = "raw">
+        <div class = "col-sm-3 bg-light text-dark p-2">
+
+            <img src="" id="user_avatar" class="img-thumbnail rounded-circle bg-light border-0" alt="" style="width: 100%; height: 100%;">
+
+            <div class="container-fluid" id = "user_info_container">
+            <div id="img_file_input" hidden="hidden">
+                <label for="formFile" class="form-label" >Загрузите аватарку:</label>
+                <input class="form-control" type="file" id="formFile" accept="image/*">
+            </div>
+            <h1 id = "user_name">
+            </h1>
+                <p>
+                    <label class="form-label p-1" for="user_email" id = "user_email_label">Email:</label>
+                    <label id = "user_email"></label>
+                </p>
+
+                <p>
+                    <label class="form-label p-1" for="user_created_date">Created date:</label>
+                    <label id = "user_created_date"></label>
+                </p>
+
+                <p>
+                    <div id = "user_about_container">
+                        <label class="form-label p-1" for="user_about">About:</label>
+                        <label id = "user_about"></label>
+                    </div>
+                    <div class="form-floating mb-3 mt-3" hidden="hidden" id="user_about_input_container">
+                        <label class="form-label p-1" for="user_about_input">About:</label>
+                        <textarea class="form-control" id="user_about_input" style="height: 100px"></textarea>
+                    </div>
+                </p>
+                <div class="d-flex flex-row-reverse bg-light p-1">
+                    <button type="button" class="btn btn-primary p-2" onclick="submit()"  hidden="hidden" id="save_btn">Сохранить</button>
+                    <button type="button" class="btn btn-secondary p-2" onclick="normal_mode()" hidden="hidden" id="cancel_btn">Отменить</button>
+                    <button type="button" class="btn btn-secondary p-2" onclick="redact_mode()" id="redact_btn">Редактировать</button>
+                </div>
+                <script>
+                    function normal_mode() {
+                        document.getElementById('save_btn').hidden = true;
+                        document.getElementById('cancel_btn').hidden = true;
+                        document.getElementById('redact_btn').hidden = false;
+                        document.getElementById('user_about_container').hidden = false;
+                        document.getElementById('user_about_input_container').hidden = true;
+                        document.getElementById('img_file_input').hidden = true;
+                    }
+
+                    function redact_mode() {
+                        document.getElementById('save_btn').hidden = false;
+                        document.getElementById('cancel_btn').hidden = false;
+                        document.getElementById('redact_btn').hidden = true;
+                        document.getElementById('user_about_container').hidden = true;
+                        document.getElementById('user_about_input_container').hidden = false;
+                        document.getElementById('user_about_input').value = document.getElementById('user_about').innerHTML;
+                        document.getElementById('img_file_input').hidden = false;
+                    }
+
+                    function submit() {
+                        let xmlhttp = new XMLHttpRequest();
+                        xmlhttp.onreadystatechange = function() {
+                            if (this.readyState == 4 && this.status == 200) {
+                                location.reload();
+                            }
+                        }
+                        xmlhttp.open("POST", "/api/update_user", true);
+                        let req = {id: usr_id}
+                        let img_file = document.getElementById('formFile').files[0];
+                        let about = document.getElementById('user_about_input').value;
+                        if (about) {
+                            req.about = about
+                        }
+
+                        xmlhttp.setRequestHeader("Content-type", "application/json", );
+                        if (img_file) {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(img_file);
+                            reader.onload = function() {
+                                req.avatar = reader.result;
+                                xmlhttp.send(JSON.stringify(req));
+                            }
+
+                        } else {
+                            xmlhttp.send(JSON.stringify(req));
+                        }
+
+
+                    }
+
+                </script>
+            </div>
+            <div class="col-sm-9 p-0">
+
+            </div>
+        </div>
+    </dev>
+
+</div>
+<script>let usr_id = {{usr_id}}</script>
+<script src="/static/js/user_info.js">
+    user_info(usr_id);
+</script>
+{% endblock %}

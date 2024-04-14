@@ -1,8 +1,6 @@
 try:
     f{ind} = {expression}
-except ZeroDivisionError:
-    f{ind} = None
-except ValueError:
+except Exception:
     f{ind} = None
 if type(f{ind}) == complex:
     f{ind} = None

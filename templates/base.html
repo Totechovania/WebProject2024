@@ -8,18 +8,6 @@
     <title>{{ title }}</title>
 </head>
 <body>
-<div class="offcanvas offcanvas-start" id="offcanvas_settings">
-  <div class="offcanvas-header">
-    <h1 class="offcanvas-title">Heading</h1>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-  </div>
-  <div class="offcanvas-body">
-    <p>Some text lorem ipsum.</p>
-    <p>Some text lorem ipsum.</p>
-    <p>Some text lorem ipsum.</p>
-    <button class="btn btn-secondary" type="button">A Button</button>
-  </div>
-</div>
 <header>
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
         <div class="container-fluid">
@@ -32,9 +20,13 @@
                         <a class="nav-link text-white" href="/social_media">Публикации</a>
                     </li>
                 </ul>
+                <a href="/profile"><img src="" id="novbar_avatar" class="img-thumbnail rounded-circle bg-dark border-0"> </a>
                 <form class="d-flex">
                     {% if current_user.is_authenticated %}
-                <a class="navbar-brand" href="/profile">{{ current_user.name }}</a>
+
+
+                <a class="navbar-brand" href = "/profile" id = "navbar_username">{{ current_user.name }}</a>
+
                 <a class="btn btn-danger" href="/logout">Выход</a>
             {% else %}
                 <a class="btn btn-primary " href="/sign_up">Зарегистрироваться</a>
@@ -43,12 +35,20 @@
                 </form>
             </div>
         </div>
-
-
     </nav>
 </header>
+<script>let cur_user_id = {% if current_user.is_authenticated %}{{ current_user.id }} {% else %}-1{% endif %};</script>
+<script>
+    let avatar = document.getElementById('novbar_avatar');
+
+
+    avatar.src = "data:image/png;base64," + "{{ current_user.avatar }}";
+    avatar.style.width = avatar.style.height = document.getElementById('navbar_username').offsetWidth + 'px';
+
+    alert(avatar.src);
+</script>
 <!-- Begin page content -->
-<main role="main" class="container-fluid">
+<main role="main" class="container-fluid p-0">
     {% block content %}{% endblock %}
 </main>
 <footer>

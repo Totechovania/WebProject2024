@@ -6,6 +6,8 @@ import datetime
 from GraphDrawer.GraphDrawer import GraphDrawer
 from utilities.draw import hex_to_rgb
 from flask_login import login_user, login_required, logout_user, current_user
+from utilities.avatar_to_bytes import avatar_to_bytes
+
 
 blueprint = flask.Blueprint(
     'api',
@@ -83,6 +85,7 @@ def new_graph():
         function=flask.request.json['function'],
         created_date=flask.request.json['created_date'],
         private=flask.request.json['private']
+
     )
     db_sess.add(graph)
     db_sess.commit()
@@ -153,10 +156,8 @@ def open_user(user_id):
 
 
 @blueprint.route('/api/draw', methods=['POST'])
-@login_required
 def draw():
     json = flask.request.get_json()
-    print(json)
     colors = json['colors']
     for i in range(len(colors)):
         colors[i] = hex_to_rgb(colors[i][1:])
@@ -166,10 +167,47 @@ def draw():
                          1 / float(json['pixel_per_unit']),
                          float(json['center_x']),
                          float(json['center_y']))
-    img = drawer.draw(json['formulas'], colors)
+    try:
+        img = drawer.draw(json['formulas'], colors)
 
-    image_file = BytesIO()
-    img.save(image_file, format='PNG')
-    imagedata = image_file.getvalue()
+        image_file = BytesIO()
+        img.save(image_file, format='PNG')
+        imagedata = image_file.getvalue()
+        return flask.make_response(base64.b64encode(imagedata), 200)
+    except SyntaxError:
+        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
 
-    return base64.b64encode(imagedata)
+
+@blueprint.route('/api/user_info/<int:id>', methods=['GET'])
+def user_info(id):
+    user = db_sess.query(users.User).get(id)
+    if user:
+        if current_user.is_authenticated and current_user.id == user.id:
+            return flask.jsonify(current_user.to_dict(only=(
+                'id', 'name', 'email', 'created_date', 'avatar', 'about')))
+        else:
+            return flask.jsonify(user.to_dict(only=(
+                'id', 'name', 'created_date', 'avatar', 'about')))
+    else:
+        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+
+
+@blueprint.route('/api/update_user', methods=['POST'])
+def update_user():
+    if not current_user.is_authenticated:
+        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+    req = flask.request.json
+    if req['id'] != current_user.id:
+        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
+
+    db_sess = db_session.create_session()
+    user = db_sess.query(users.User).get(current_user.id)
+    if "avatar" in req.keys():
+        avatar_file = req['avatar']
+        avatar = avatar_to_bytes(avatar_file)
+        user.avatar = avatar
+    if "about" in req.keys():
+        about = req['about']
+        user.about = about
+    db_sess.commit()
+    return flask.jsonify({'success': 'OK'})
