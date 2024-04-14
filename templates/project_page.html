@@ -60,13 +60,15 @@
                 </li>
             </ul>
             <li class="nav-item">
-                <button type="button" class="btn btn-primary" id="save_btn" onclick="save_graph()">Сохранить</button>
+                <button type="button" class="btn btn-primary" id="save_graph_btn" {% if current_user.is_authenticated %} onclick="save_graph()" {% else %} onclick="alert('Войдите в аккаунт')" {% endif %}>Сохранить</button>
             </li>
         </div>
     </div>
 </nav>
 <script src="static/js/add_formula.js"></script>
+<script src="static/js/get_graph_params.js"></script>
 <script src="static/js/draw_graph.js"></script>
+<script src="static/js/save_graph.js"></script>
 <script>
 window.addEventListener('beforeunload', function (e) {
     e.preventDefault();

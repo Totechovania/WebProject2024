@@ -5,8 +5,9 @@ from data import db_session, graphs, users, news
 import datetime
 from GraphDrawer.GraphDrawer import GraphDrawer
 from utilities.draw import hex_to_rgb
-from flask_login import current_user
+from flask_login import current_user, login_required
 from utilities.avatar_to_bytes import avatar_to_bytes
+from utilities.generate_graph_preview import generate_graph_preview
 
 blueprint = flask.Blueprint(
     'api',
@@ -123,19 +124,36 @@ def delete_user(user_id):
 
 
 @blueprint.route('/api/new_graph', methods=['POST'])
+@login_required
 def new_graph():
     if not flask.request.json:
         return flask.make_response(flask.jsonify({'error': 'Empty request'}), 400)
-    elif not all(key in flask.request.json for key in
-                 ['name', 'function', 'created_date', 'private']):
+
+    req = flask.request.json
+
+    if not all(key in req.keys() for key in ['name', 'private', 'graphs_params']):
         return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
+
+    name = req['name']
+    private = req['private']
+    graphs_params = req['graphs_params']
+
+    try:
+        img = generate_graph_preview(graphs_params)
+    except SyntaxError:
+        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
+
     graph = graphs.Graph(
-        name=flask.request.json['name'],
-        function=flask.request.json['function'],
-        created_date=flask.request.json['created_date'],
-        private=flask.request.json['private']
+        user_id=current_user.id,
+        name=name,
+        function=str(graphs_params),
+        created_date=datetime.datetime.now(),
+        private=bool(private),
+        preview=img,
 
     )
+
+    db_sess = db_session.create_session()
     db_sess.add(graph)
     db_sess.commit()
     return flask.jsonify({'id': graph.id})
