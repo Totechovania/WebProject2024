@@ -6,6 +6,7 @@ from forms.news import NewsForm
 from data.news import News
 from data.users import User
 from data import db_session
+from utilities.message_sender import send_email, generate_code
 
 app, login_manager = init_all()
 db_sess = db_session.create_session()
@@ -98,6 +99,9 @@ def sign_up_page():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Такой пользователь уже есть")
+        code = generate_code()
+        print(send_email(code, form.email.data))
+        print(code, form.email.data)
         user = User(
             name=form.name.data,
             email=form.email.data,
