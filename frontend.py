@@ -162,7 +162,6 @@ def projects_page():
 
 @app.route('/', methods=['GET'])
 def social_media_main_page():
-    db_sess = db_session.create_session()
     if current_user.is_authenticated:
         news = db_sess.query(News).filter(
             (News.user == current_user) | (News.is_private != True))

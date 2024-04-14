@@ -1,13 +1,12 @@
 import base64
 from io import BytesIO
 import flask
-from data import db_session, graphs, users
+from data import db_session, graphs, users, news
 import datetime
 from GraphDrawer.GraphDrawer import GraphDrawer
 from utilities.draw import hex_to_rgb
-from flask_login import login_user, login_required, logout_user, current_user
+from flask_login import current_user
 from utilities.avatar_to_bytes import avatar_to_bytes
-
 
 blueprint = flask.Blueprint(
     'api',
@@ -16,6 +15,56 @@ blueprint = flask.Blueprint(
 )
 
 db_sess = db_session.create_session()
+
+
+@blueprint.route('/api/user_graphs/<int:user_id>', methods=['GET'])
+def user_graphs(user_id):
+    if current_user.is_authenticated:
+        if current_user.id == user_id:
+            graph = db_sess.query(graphs.Graph).filter(graphs.Graph.user == current_user)
+            return flask.jsonify(
+                {
+                    'graphs':
+                        [item.to_dict(only=(
+                            'id', 'private', 'name', 'function', 'preview_path', 'user_id', 'update_date',
+                            'created_date'))
+                            for item in graph]
+                }
+            )
+    graph = db_sess.query(graphs.Graph).filter(graphs.Graph.private != True)
+    return flask.jsonify(
+        {
+            'graphs':
+                [item.to_dict(only=(
+                    'id', 'private', 'name', 'function', 'preview_path', 'user_id', 'update_date',
+                    'created_date'))
+                    for item in graph]
+        }
+    )
+
+
+@blueprint.route('/api/user_news/<int:user_id>', methods=['GET'])
+def user_news(user_id):
+    if current_user.is_authenticated:
+        if current_user.id == user_id:
+            new = db_sess.query(news.News).filter(news.News.user == current_user)
+            return flask.jsonify(
+                {
+                    'news':
+                        [item.to_dict(only=(
+                            'id', 'title', 'content', 'created_date', 'is_private', 'user_id'))
+                            for item in new]
+                }
+            )
+    new = db_sess.query(news.News).filter(news.News.is_private != True)
+    return flask.jsonify(
+        {
+            'news':
+                [item.to_dict(only=(
+                    'id', 'title', 'content', 'created_date', 'is_private', 'user_id'))
+                    for item in new]
+        }
+    )
 
 
 @blueprint.route('/api/sign_up', methods=['POST'])
@@ -200,7 +249,6 @@ def update_user():
     if req['id'] != current_user.id:
         return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
 
-    db_sess = db_session.create_session()
     user = db_sess.query(users.User).get(current_user.id)
     if "avatar" in req.keys():
         avatar_file = req['avatar']
