@@ -27,17 +27,17 @@ def user_graphs(user_id):
                 {
                     'graphs':
                         [item.to_dict(only=(
-                            'id', 'private', 'name', 'function', 'preview_path', 'user_id', 'update_date',
+                            'id', 'private', 'name', 'function', 'preview', 'user_id', 'update_date',
                             'created_date'))
                             for item in graph]
                 }
             )
-    graph = db_sess.query(graphs.Graph).filter(graphs.Graph.private != True)
+    graph = db_sess.query(graphs.Graph).filter((graphs.Graph.private != True) and (graphs.Graph.user_id == user_id))
     return flask.jsonify(
         {
             'graphs':
                 [item.to_dict(only=(
-                    'id', 'private', 'name', 'function', 'preview_path', 'user_id', 'update_date',
+                    'id', 'private', 'name', 'function', 'preview', 'user_id', 'update_date',
                     'created_date'))
                     for item in graph]
         }

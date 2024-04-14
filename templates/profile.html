@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container-fluid p-0 border1">
-    <dev class = "raw">
-        <div class = "col-sm-3 bg-light text-dark p-2">
-
-            <img src="" id="user_avatar" class="img-thumbnail rounded-circle bg-light border-0" alt="" style="width: 100%; height: 100%;">
+    <dev class = "row">
+        <div class ="col-sm-3 bg-light text-dark p-2">
+            <img src="" id="user_avatar" class="img-thumbnail rounded-circle bg-light border-0" alt="" style="width: 100%;">
 
             <div class="container-fluid" id = "user_info_container">
             <div id="img_file_input" hidden="hidden">
@@ -91,9 +90,29 @@
 
                 </script>
             </div>
-            <div class="col-sm-9 p-0">
+        </div>
+        <div class="col-sm-9 p-0">
+                <!-- Nav pills -->
+                  <ul class="nav nav-pills bg-light" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" data-bs-toggle="pill" href="#graphs_tab">Графики</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" data-bs-toggle="pill" href="#news_tab">Новости </a>
+                    </li>
+                  </ul>
 
-            </div>
+                  <!-- Tab panes -->
+                  <div class="tab-content">
+                    <div id="graphs_tab" class="container tab-pane active"><br>
+                      <h3>HOME</h3>
+                      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                    </div>
+                    <div id="news_tab" class="container tab-pane fade"><br>
+                      <h3>Menu 1</h3>
+                      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
+                  </div>
         </div>
     </dev>
 
@@ -102,4 +121,5 @@
 <script src="/static/js/user_info.js">
     user_info(usr_id);
 </script>
+<script src="/static/js/add_graphs.js"></script>
 {% endblock %}
