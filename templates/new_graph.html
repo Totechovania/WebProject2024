@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid xl">
+</div>
+        <div class="row">
+
+            <div class="col-sm-4 bg-light text-white">
+                <style>input {width: 100%;}</style>
+                <div class="d-flex flex-column" id="formulas">
+                </div>
+                <button type="button" class="btn w-100" id="new_btn">
+                        <div class="d-flex flex-row  p-1 bg-light border-1" onclick="add_formula()">
+                            new
+                        </div>
+                </button>
+            </div>
+            <div class="col-sm-8 p-0">
+
+                <div class="d-flex flex-row bg-light border-1 p-2">
+                    <label class="form-label p-1" for="img_width">width:</label>
+                    <input type="number" id="img_width" placeholder="1000">
+                    <label class="form-label p-1" for="img_height">height:</label>
+                    <input type="number" id="img_height" placeholder="1000">
+                    <label class="form-label p-1" for="center_x">x:</label>
+                    <input type="number" id="center_x" placeholder="0">
+                    <label class="form-label p-1" for="center_y">y:</label>
+                    <input type="number" id="center_y" placeholder="0">
+
+                    <label class="form-label p-1" for="pixel_per_unit">scale:</label>
+                    <input type="number" id="pixel_per_unit" placeholder="100">
+
+                    <button type="button" class="btn btn-primary" id="draw_btn" onclick="draw()">Draw</button>
+                </div>
+                <img class="img-fluid" src="static/coords.png" alt="No img" id="graph_img">
+            </div>
+        </div>
+  </div>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-bottom">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="mynavbar">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <label class="form-label text-white" for="graph_name">Название:</label>
+                </li>
+
+                <li class="nav-item">
+                    <input type="text" id="graph_name" placeholder="Новый график">
+                </li>
+
+                <li class="nav-item">
+                    <label class="form-label text-white" for="graph_privacy">Приватность:</label>
+                </li>
+
+                <li class="nav-item">
+                    <select id="graph_privacy">
+                        <option value="public">приватный</option>
+                        <option value="private">публичный</option>
+                    </select>
+                </li>
+            </ul>
+            <li class="nav-item">
+                <button type="button" class="btn btn-primary" id="save_graph_btn" {% if current_user.is_authenticated %} onclick="save_graph()" {% else %} onclick="alert('Войдите в аккаунт')" {% endif %}>Сохранить</button>
+            </li>
+        </div>
+    </div>
+</nav>
+
+<script src="/static/js/add_formula.js"></script>
+<script src="/static/js/get_graph_params.js"></script>
+<script src="/static/js/draw_graph.js"></script>
+<script src="/static/js/save_graph.js"></script>
+<script>
+    function beforeunload_handler(e) {
+        e.preventDefault();
+    }
+    window.addEventListener('beforeunload', beforeunload_handler);
+</script>
+{% endblock %}

@@ -16,7 +16,7 @@ xmlhttp_get_graphs.onreadystatechange = function () {
                             <div class="card-body">
                               <h4 class="card-title">${name}</h4>
                               <p class="card-text">aaaaaaaa</p>
-                              <a href="#" class="btn btn-primary">Открыть</a>
+                              <a href="/graph/${id}" class="btn btn-primary">Открыть</a>
                             </div>
                          </div>
                          </div>`

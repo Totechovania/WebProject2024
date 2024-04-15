@@ -164,10 +164,14 @@ def open_graph(graph_id):
     graph = db_sess.query(graphs.Graph).get(graph_id)
     if not graph:
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+    if not graph:
+        return flask.make_response('Not found', 404)
+    if graph.private and (not current_user.is_authenticated or current_user.id != graph.user_id):
+        return flask.make_response('Not found', 404)
+
     return flask.jsonify(
         {
-            'graph': graph.to_dict(only=(
-                'name', 'function', 'created_date', 'private'))
+            'graph': graph.to_dict(only=('name', 'function', 'created_date', 'preview',  'private', 'user_id', 'id'))
         }
     )
 

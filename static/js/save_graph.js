@@ -7,10 +7,13 @@ function save_graph() {
     let private = (document.getElementById('graph_privacy').value === "private");
     let graphs_params = get_graph_params();
 
-    xmlhttp_save_graph = new XMLHttpRequest();
+    let xmlhttp_save_graph = new XMLHttpRequest();
     xmlhttp_save_graph.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
+            let graph_id = JSON.parse(this.responseText).id;
+            window.removeEventListener('beforeunload', beforeunload_handler);
             btn.innerHTML = 'Сохранить';
+            window.location.href = '/graph/' + graph_id;
         } else if (this.readyState == 4 && this.status == 400) {
             alert("Error: " + this.responseText);
             btn.innerHTML = 'Сохранить';

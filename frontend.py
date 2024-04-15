@@ -1,11 +1,11 @@
 from utilities.system import init_all
-from flask import redirect, url_for, render_template, abort, request
+from flask import redirect, url_for, render_template, abort, request, make_response
 from flask_login import login_user, login_required, logout_user, current_user
 from forms.user import RegisterForm, LoginForm
 from forms.news import NewsForm
 from data.news import News
 from data.users import User
-from data import db_session
+from data import db_session, graphs
 from utilities.message_sender import send_email, generate_code
 
 app, login_manager = init_all()
@@ -151,7 +151,17 @@ def graphs_page():
 
 @app.route('/new_graph', methods=['GET', 'PUT'])
 def new_graph_page():
-    return render_template('project_page.html', title='Новый график')
+    return render_template('new_graph.html', title='Новый график')
+
+
+@app.route('/graph/<int:id>', methods=['GET'])
+def graph_page(id):
+    graph = db_sess.query(graphs.Graph).get(id)
+    if not graph:
+        return make_response('Not found', 404)
+    if graph.private and ( not current_user.is_authenticated or current_user.id != graph.user_id):
+        return make_response('Not found', 404)
+    return render_template('graph.html', title='График', graph=graph)
 
 
 @app.route('/settings', methods=['GET', 'POST'])
