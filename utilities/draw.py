@@ -4,4 +4,4 @@ def hex_to_rgb(hex):
         decimal = int(hex[i:i + 2], 16)
         rgb.append(decimal)
 
-    return tuple(rgb)
+    return list(rgb)

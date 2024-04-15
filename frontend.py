@@ -134,6 +134,9 @@ def main_page():
 
 @app.route('/profile/<id>', methods=['GET'])
 def profile(id):
+    user = db_sess.query(User).get(id)
+    if not user:
+        return make_response('Not found', 404)
     return render_template('profile.html', title='Профиль', usr_id=id)
 
 

@@ -12,7 +12,7 @@ xmlhttp_show_graph.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         let graph = JSON.parse(this.responseText).graph;
         let graph_param = graph.function;
-        graph_param = graph_param.replace(/'/g, '"').replace('(', "[").replace(')', "]");
+        graph_param = graph_param.replace(/'/g, '"');
         graph_param = JSON.parse(graph_param);
 
         let name = graph.name;
