@@ -107,7 +107,6 @@ def sign_in():
 @login_required
 def delete_graph(graph_id):
     print(graph_id)
-    db_sess = db_session.create_session()
     graph = db_sess.query(graphs.Graph).get(graph_id)
     if not graph:
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
@@ -160,7 +159,6 @@ def new_graph():
 
     )
 
-    db_sess = db_session.create_session()
     db_sess.add(graph)
     db_sess.commit()
     return flask.jsonify({'id': graph.id})
