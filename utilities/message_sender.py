@@ -11,7 +11,7 @@ def send_email(message, recipient):
 
     try:
         server.login(sender, password)
-        server.sendmail(sender, recipient, f'Subject: Registration to DeMedia\nYour code: {message}')
+        server.sendmail(sender, recipient, f'Subject: Registration to DeMedia\n\nYour code: {message}')
 
         return "Message sent successfully!"
     except Exception as er:
