@@ -8,14 +8,21 @@ xmlhttp_get_graphs.onreadystatechange = function () {
             let id = graph['id'];
             let name = graph['name'];
             let preview = graph['preview'];
+            let privacy = graph['private'];
+            let privacy_text = "";
+            if (privacy) {
+                privacy_text = "Приватный";
+            } else {
+                privacy_text = "Публичный";
+            }
 
             graphs_container.innerHTML += `
                         <div class="p-2">
-                        <div class="card" style="width: 300px;">
+                        <div class="card" style="">
                             <img class="card-img-top" src="data:image/png;base64,${preview}" alt="Card image">
                             <div class="card-body">
                               <h4 class="card-title">${name}</h4>
-                              <p class="card-text">aaaaaaaa</p>
+                              <p class="card-text">${privacy_text}</p>
                               <a href="/graph/${id}" class="btn btn-primary">Открыть</a>
                             </div>
                          </div>

@@ -59,13 +59,21 @@
                     </select>
                 </li>
             </ul>
+            {% if current_user.is_authenticated and current_user.id == graph.user_id %}
             <li class="nav-item">
-                <button type="button" class="btn btn-primary" id="save_graph_changes_btn" {% if current_user.is_authenticated and current_user.id == graph.user_id %}
-                        onclick="save_graph_changes()">Сохранить изменения
-                    {% elif current_user.is_authenticated %}
-                    onclick="save_graph()"> Сохранить
-                    {% else %} onclick="alert('Войдите в аккаунт')"> Сохранить {% endif %}</button>
+                <button type="button" class="btn text-danger" id="delete_graph_btn" onclick="delete_graph()">Удалить</button>
+                <button type="button" class="btn btn-primary" id="save_graph_changes_btn" onclick="save_graph_changes()">Сохранить изменения</button>
             </li>
+            {% elif current_user.is_authenticated %}
+            <li class="nav-item">
+                <button type="button" class="btn btn-primary" id="save_graph_btn" onclick="save_graph()">Сохранить</button>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <button type="button" class="btn btn-primary" onclick="alert('Войдите в аккаунт')">Сохранить</button>
+            </li>
+            {% endif %}
+
         </div>
     </div>
 </nav>
@@ -75,9 +83,12 @@
 <script src="/static/js/draw_graph.js"></script>
 <script src="/static/js/save_graph.js"></script>
 <script src="/static/js/show_graph.js"></script>
+<script src="/static/js/delete_graph.js"></script>
+<script src="/static/js/save_graph_changes.js"></script>
 <script>
-window.addEventListener('beforeunload', function (e) {
-    e.preventDefault();
-});
+    function beforeunload_handler(e) {
+        e.preventDefault();
+    }
+    window.addEventListener('beforeunload', beforeunload_handler);
 </script>
 {% endblock %}

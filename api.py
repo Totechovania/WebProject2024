@@ -103,11 +103,18 @@ def sign_in():
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
 
 
-@blueprint.route('/api/delete_graph<int:graph_id>', methods=['DELETE'])
+@blueprint.route('/api/delete_graph/<int:graph_id>', methods=['DELETE'])
+@login_required
 def delete_graph(graph_id):
-    graph = db_sess.query(users.User).get(graph_id)
+    print(graph_id)
+    db_sess = db_session.create_session()
+    graph = db_sess.query(graphs.Graph).get(graph_id)
     if not graph:
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+
+    if current_user.id != graph.user_id:
+        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+
     db_sess.delete(graph)
     db_sess.commit()
     return flask.jsonify({'success': 'OK'})
@@ -176,13 +183,39 @@ def open_graph(graph_id):
     )
 
 
-@blueprint.route('/api/update_graph<int:graph_id>', methods=['PUT'])
+@blueprint.route('/api/update_graph/<int:graph_id>', methods=['PUT'])
+@login_required
 def update_graph(graph_id):
     graph = db_sess.query(graphs.Graph).get(graph_id)
-    req = flask.request.json
     if not graph:
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
-    db_sess.query(graphs.Graph).update(graph_id, req)
+
+    if current_user.id != graph.user_id:
+        return flask.make_response('Not found', 404)
+
+    if not flask.request.json:
+        return flask.make_response(flask.jsonify({'error': 'Empty request'}), 400)
+
+    req = flask.request.json
+
+    if not all(key in req.keys() for key in ['name', 'private', 'graphs_params']):
+        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
+
+    name = req['name']
+    private = req['private']
+    graphs_params = req['graphs_params']
+
+    try:
+        img = generate_graph_preview(graphs_params)
+    except SyntaxError:
+        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
+
+    graph.name = name
+    graph.function = str(graphs_params)
+    graph.private = bool(private)
+    graph.preview = img
+    graph.update_date = datetime.datetime.now()
+
     db_sess.commit()
     return flask.jsonify({'success': 'OK'})
 
