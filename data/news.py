@@ -15,6 +15,8 @@ class News(SqlAlchemyBase, SerializerMixin):
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
     is_private = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+    votes = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+    graph_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('graphs.id'))
     categories = orm.relationship("Category",
                                   secondary="association",
                                   backref="news")

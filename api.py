@@ -57,7 +57,7 @@ def user_news(user_id):
                             for item in new]
                 }
             )
-    new = db_sess.query(news.News).filter(news.News.is_private != True)
+    new = db_sess.query(news.News).filter(news.News.is_private != True, news.News.user_id == user_id)
     return flask.jsonify(
         {
             'news':
@@ -176,7 +176,7 @@ def open_graph(graph_id):
 
     return flask.jsonify(
         {
-            'graph': graph.to_dict(only=('name', 'function', 'created_date', 'preview',  'private', 'user_id', 'id'))
+            'graph': graph.to_dict(only=('name', 'function', 'created_date', 'preview', 'private', 'user_id', 'id'))
         }
     )
 
@@ -297,7 +297,7 @@ def user_info(id):
 @blueprint.route('/api/update_user', methods=['POST'])
 def update_user():
     if not current_user.is_authenticated:
-        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+        return flask.make_response(flask.jsonify({'error': 'Not Authenticated'}), 401)
     req = flask.request.json
     if req['id'] != current_user.id:
         return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
@@ -312,3 +312,76 @@ def update_user():
         user.about = about
     db_sess.commit()
     return flask.jsonify({'success': 'OK'})
+
+
+@blueprint.route('/api/all_news', methods=['GET'])
+def all_news():
+    new = db_sess.query(news.News).filter(news.News.is_private != True)
+    return flask.jsonify(
+        {
+            'news':
+                [item.to_dict(only=(
+                    'id', 'title', 'content', 'created_date', 'is_private', 'user_id'))
+                    for item in new]
+        }
+    )
+
+
+@blueprint.route('/api/update_news/<int:news_id>', methods=['POST'])
+def update_news(news_id):
+    new = db_sess.query(news.News).filter(news.News.id == news_id,
+                                          news.News.user == current_user).first()
+    if not current_user.is_authenticated:
+        return flask.make_response(flask.jsonify({'error': 'Not Authenticated'}), 401)
+    if not new:
+        return flask.make_response(flask.jsonify({'error': 'Not Found or Not Enough Rights'}), 404)
+    if not all(key in flask.request.json.keys() for key in ['title', 'content', 'is_private']):
+        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
+    new.title = flask.request.json['title']
+    new.content = flask.request.json['content']
+    new.is_private = flask.request.json['is_private']
+    db_sess.commit()
+    return flask.jsonify({'success': 'OK'})
+
+
+@blueprint.route('/api/delete_news/<int:news_id>', methods=['DELETE'])
+def delete_news(news_id):
+    new = db_sess.query(news.News).filter(news.News.id == news_id,
+                                          news.News.user == current_user).first()
+    if not current_user.is_authenticated:
+        return flask.make_response(flask.jsonify({'error': 'Not Authenticated'}), 401)
+    if not new:
+        return flask.make_response(flask.jsonify({'error': 'Not Found or Not Enough Rights'}), 404)
+    db_sess.delete(new)
+    db_sess.commit()
+    return flask.jsonify({'success': 'OK'})
+
+
+@blueprint.route('/api/new_news', methods=['POST'])
+def new_news():
+    if not current_user.is_authenticated:
+        return flask.make_response(flask.jsonify({'error': 'Not Authenticated'}), 401)
+    if not all(key in flask.request.json.keys() for key in ['title', 'content', 'is_private']):
+        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
+    new = news.News()
+    new.title = flask.request.json['title']
+    new.content = flask.request.json['content']
+    new.is_private = flask.request.json['is_private']
+    current_user.news.append(news)
+    db_sess.merge(current_user)
+    db_sess.commit()
+    return flask.jsonify({'success': 'OK'})
+
+
+@blueprint.route('/api/open_news/<int:news_id>', methods=['GET'])
+def open_news(news_id):
+    new = db_sess.query(news.News).filter(news.News.id == news_id).first()
+    if not new:
+        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+    if new.is_private:
+        if new.News.user == current_user:
+            return flask.jsonify(new.to_dict(
+                only=('id', 'title', 'content', 'created_date', 'is_private', 'votes', 'graph_id', 'user_id')))
+        return flask.make_response(flask.jsonify({'error': 'Not Enough Rights'}), 401)
+    return flask.jsonify(new.to_dict(
+        only=('id', 'title', 'content', 'created_date', 'is_private', 'votes', 'graph_id', 'user_id')))
