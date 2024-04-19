@@ -1,5 +1,5 @@
-from utilities.system import init_all
-from flask import redirect, url_for, render_template, abort, request, make_response
+from utilities.system import init_all, load_user_db
+from flask import redirect, render_template, abort, request, make_response
 from flask_login import login_user, login_required, logout_user, current_user
 from forms.user import RegisterForm, LoginForm
 from forms.news import NewsForm
@@ -21,7 +21,7 @@ def logout():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db_sess.query(User).get(user_id)
+    return load_user_db(user_id)
 
 
 @app.route('/news', methods=['GET', 'POST'])
@@ -162,7 +162,7 @@ def graph_page(id):
     graph = db_sess.query(graphs.Graph).get(id)
     if not graph:
         return make_response('Not found', 404)
-    if graph.private and ( not current_user.is_authenticated or current_user.id != graph.user_id):
+    if graph.private and (not current_user.is_authenticated or current_user.id != graph.user_id):
         return make_response('Not found', 404)
     return render_template('graph.html', title='График', graph=graph)
 

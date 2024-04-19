@@ -68,6 +68,7 @@ def user_news(user_id):
     )
 
 
+'''
 @blueprint.route('/api/sign_up', methods=['POST'])
 def sign_up():
     if not flask.request.json:
@@ -101,6 +102,7 @@ def sign_in():
             ...
             return flask.jsonify({'success': 'OK'})
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+'''
 
 
 @blueprint.route('/api/delete_graph/<int:graph_id>', methods=['DELETE'])
@@ -112,7 +114,7 @@ def delete_graph(graph_id):
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
 
     if current_user.id != graph.user_id:
-        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+        return flask.make_response(flask.jsonify({'error': 'Not Enough Rights'}), 401)
 
     db_sess.delete(graph)
     db_sess.commit()
@@ -124,6 +126,8 @@ def delete_user(user_id):
     user = db_sess.query(users.User).get(user_id)
     if not user:
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+    if current_user.id != users.User.id:
+        return flask.make_response(flask.jsonify({'error': 'Not Enough Rights'}), 401)
     db_sess.delete(user)
     db_sess.commit()
     return flask.jsonify({'success': 'OK'})
@@ -169,8 +173,6 @@ def open_graph(graph_id):
     graph = db_sess.query(graphs.Graph).get(graph_id)
     if not graph:
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
-    if not graph:
-        return flask.make_response('Not found', 404)
     if graph.private and (not current_user.is_authenticated or current_user.id != graph.user_id):
         return flask.make_response('Not found', 404)
 
@@ -220,7 +222,7 @@ def update_graph(graph_id):
 
 @blueprint.route('/api/all_graphs', methods=['GET'])
 def all_graphs():
-    graph = db_sess.query(graphs.Graph).all()
+    graph = db_sess.query(graphs.Graph).filter(graphs.Graph.is_private != True).all()
     return flask.jsonify(
         {
             'graphs':
