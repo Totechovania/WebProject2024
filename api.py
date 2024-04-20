@@ -46,24 +46,22 @@ def user_graphs(user_id):
 
 @blueprint.route('/api/user_news/<int:user_id>', methods=['GET'])
 def user_news(user_id):
-    if current_user.is_authenticated:
-        if current_user.id == user_id:
-            new = db_sess.query(news.News).filter(news.News.user == current_user)
-            return flask.jsonify(
-                {
-                    'news':
-                        [item.to_dict(only=(
-                            'id', 'title', 'content', 'created_date', 'is_private', 'user_id'))
-                            for item in new]
-                }
-            )
-    new = db_sess.query(news.News).filter(news.News.is_private != True, news.News.user_id == user_id)
+    if current_user.is_authenticated and current_user.id == user_id:
+        new = db_sess.query(news.News).filter(news.News.user == current_user)
+    else:
+        new = db_sess.query(news.News).filter(news.News.is_private != True, news.News.user_id == user_id)
+    graph = db_sess.query(graphs.Graph).filter(graphs.Graph.user_id == user_id)
+    user = db_sess.query(users.User).filter(users.User.id == user_id).first()
     return flask.jsonify(
         {
             'news':
                 [item.to_dict(only=(
-                    'id', 'title', 'content', 'created_date', 'is_private', 'user_id'))
-                    for item in new]
+                    'id', 'title', 'content', 'updated_date', 'is_private', 'votes', 'graph_id', 'user_id'))
+                    for item in new],
+            'graphs': [item.to_dict(only=(
+                'id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date'))
+                for item in graph],
+            'user': user.to_dict(only=('id', 'name', 'about', 'avatar'))
         }
     )
 
@@ -319,12 +317,20 @@ def update_user():
 @blueprint.route('/api/all_news', methods=['GET'])
 def all_news():
     new = db_sess.query(news.News).filter(news.News.is_private != True)
+    news_table = [item.to_dict(only=(
+        'id', 'title', 'content', 'updated_date', 'is_private', 'votes', 'graph_id', 'user_id'))
+        for item in new]
+    for i in range(len(news_table)):
+        user = db_sess.query(users.User).filter(users.User.id == news_table[i]['user_id']).first()
+        graph = db_sess.query(graphs.Graph).filter(graphs.Graph.user_id == news_table[i]['graph_id']).first()
+        if graph:
+            news_table[i]['graph'] = graph.to_dict(
+                only=('id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date'))
+        news_table[i]['user'] = user.to_dict(only=('id', 'name', 'about', 'avatar'))
     return flask.jsonify(
         {
             'news':
-                [item.to_dict(only=(
-                    'id', 'title', 'content', 'created_date', 'is_private', 'user_id'))
-                    for item in new]
+                news_table
         }
     )
 
@@ -389,6 +395,8 @@ def open_news(news_id):
         if new.user_id == current_user.id:
             return flask.make_response(flask.jsonify({'error': 'Not Enough Rights'}), 401)
 
-    return flask.jsonify({'news': new.to_dict(only=('id', 'title', 'content', 'updated_date', 'is_private', 'votes', 'graph_id', 'user_id')),
-                          'graph': graph.to_dict(only=('id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date')),
-                            'user': user.to_dict(only=('id', 'name', 'about', 'avatar',))})
+    return flask.jsonify({'news': new.to_dict(
+        only=('id', 'title', 'content', 'updated_date', 'is_private', 'votes', 'graph_id', 'user_id')),
+        'graph': graph.to_dict(
+            only=('id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date')),
+        'user': user.to_dict(only=('id', 'name', 'about', 'avatar'))})
