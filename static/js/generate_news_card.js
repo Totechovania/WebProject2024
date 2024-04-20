@@ -7,9 +7,10 @@ function generate_news_card(info, card_id) {
 
 
 
-    let user_name_element_str = `<img src="data:image/png;base64,${user_info.avatar}" class="img-fluid rounded-circle border" alt="Card image" style="width: 40px; height: 40px;">
-                            <a class="navbar-brand text-dark" href="/profile/${user_info.id}">${user_info.name}</a>
+    let user_name_element_str = `
+                            <a class="navbar-brand text-dark" href="/profile/${user_info.id}"><img src="data:image/png;base64,${user_info.avatar}" class="img-fluid rounded-circle border" alt=""  style="width: 40px; height: 40px;">${user_info.name}</a>
                             <label class="text-secondary">${news_info.updated_date} </label>`
+
 
     let news_element_str = `<div class="container-fluid">
                                     <h4 class="card-title" id="card_title${card_id}">${news_info.title}</h4>

@@ -111,7 +111,9 @@
 
             </div>
                 <div id="news_tab" class="container-fluid tab-pane active"><br>
+                    {% if usr_id == cur_user_id %}
                     <button class="btn bg-light text-secondary p-2" onclick="add_news()">Новая публикация</button>
+                    {% endif %}
                     <div class="d-flex flex-wrap-reverse p-2 " id="news_container">
 
                   </div>
