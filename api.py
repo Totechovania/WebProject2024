@@ -335,7 +335,7 @@ def open_news(news_id):
         'user': user.to_dict(only=('id', 'name', 'about', 'avatar'))})
 
 
-@blueprint.route('/api/generate_code/<email>', methods=['GET'])
+@blueprint.route('/api/generate_code/<email>', methods=['POST'])
 def generate_code(email):
     validation_object = db_sess.query(codes.Codes).filter(codes.Codes.email == email).first()
     if not validation_object:

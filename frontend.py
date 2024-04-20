@@ -6,7 +6,7 @@ from forms.news import NewsForm
 from data.news import News
 from data.users import User
 from data import db_session, graphs
-from utilities.message_sender import send_email, generate_code
+from utilities.message_sender import send_email
 
 app, login_manager = init_all()
 db_sess = db_session.create_session()

@@ -5,7 +5,7 @@ from sqlalchemy_serializer import SerializerMixin
 
 
 class Codes(SqlAlchemyBase, SerializerMixin):
-    __tablename__ = 'graphs'
+    __tablename__ = 'codes'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     code = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
