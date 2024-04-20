@@ -352,7 +352,9 @@ def generate_code(email):
         db_sess.commit()
         return flask.make_response(flask.jsonify({'success': 'OK'}), 200)
     else:
-        if datetime.datetime.now() - validation_object.update_date < datetime.timedelta(minutes=1):
+        if datetime.datetime.now() - validation_object.update_date > datetime.timedelta(minutes=10):
+            return flask.make_response(flask.jsonify({'error': 'Not found or too old'}), 404)
+        elif datetime.datetime.now() - validation_object.update_date < datetime.timedelta(minutes=1):
             validation_object.update_date = datetime.datetime.now()
             db_sess.commit()
             return flask.make_response(flask.jsonify({'success': 'OK'}), 200)

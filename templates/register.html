@@ -66,6 +66,8 @@
         xmlhttp_send_code.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 429) {
                 alert('Слишком много запросов. Попробуйте позже')
+            } else if (this.readyState == 4 && this.status == 404) {
+                alert(this.responseText)
             }
         }
         xmlhttp_send_code.open( "POST", "/api/generate_code/" + document.getElementById("email").value, true );
