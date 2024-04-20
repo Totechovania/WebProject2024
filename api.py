@@ -63,42 +63,6 @@ def user_news(user_id):
     return flask.jsonify(res)
 
 
-'''
-@blueprint.route('/api/sign_up', methods=['POST'])
-def sign_up():
-    if not flask.request.json:
-        return flask.make_response(flask.jsonify({'error': 'Empty request'}), 400)
-    elif not all(key in flask.request.json for key in
-                 ['name', 'email', 'password']):
-        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
-    new_user = users.User(
-        name=flask.request.json['name'],
-        email=flask.request.json['email'],
-        password=flask.request.json['password'],
-        created_date=datetime.datetime.now()
-    )
-    db_sess.add(new_user)
-    db_sess.commit()
-    return flask.jsonify({'id': new_user.id})
-
-
-@blueprint.route('/api/sign_in', methods=['POST'])
-def sign_in():
-    if not flask.request.json:
-        return flask.make_response(flask.jsonify({'error': 'Empty request'}), 400)
-    elif not all(key in flask.request.json for key in
-                 ['email', 'password']):
-        return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
-    users_db = db_sess.query(users.User).all()
-    if not users_db:
-        return flask.make_response(flask.jsonify({'error': 'Empty data_base'}), 404)
-    for user in users_db:
-        if flask.request.json['email'] == user['email'] and user['password'] == flask.request.json['password']:
-            ...
-            return flask.jsonify({'success': 'OK'})
-        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
-'''
-
 
 @blueprint.route('/api/delete_graph/<int:graph_id>', methods=['DELETE'])
 @login_required
@@ -227,33 +191,6 @@ def all_graphs():
     )
 
 
-'''
-@blueprint.route('/api/all_users', methods=['GET'])
-def all_users():
-    user = db_sess.query(users.User).all()
-    return flask.jsonify(
-        {
-            'users':
-                [item.to_dict(only=('name', 'email', 'hashed_password', 'created_date'))
-                 for item in user]
-        }
-    )
-
-
-@blueprint.route('/api/open_user/<int:user_id>', methods=['GET'])
-def open_user(user_id):
-    user = db_sess.query(users.User).get(user_id)
-    if not user:
-        return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
-    return flask.jsonify(
-        {
-            'user': user.to_dict(only=(
-                'name', 'email', 'hashed_password', 'created_date'))
-        }
-    )
-'''
-
-
 @blueprint.route('/api/draw', methods=['POST'])
 def draw():
     json = flask.request.get_json()
@@ -313,23 +250,16 @@ def update_user():
 
 @blueprint.route('/api/all_news', methods=['GET'])
 def all_news():
-    new = db_sess.query(news.News).filter(news.News.is_private != True)
-    news_table = [item.to_dict(only=(
-        'id', 'title', 'content', 'updated_date', 'is_private', 'votes', 'graph_id', 'user_id'))
-        for item in new]
-    for i in range(len(news_table)):
-        user = db_sess.query(users.User).filter(users.User.id == news_table[i]['user_id']).first()
-        graph = db_sess.query(graphs.Graph).filter(graphs.Graph.user_id == news_table[i]['graph_id']).first()
-        if graph:
-            news_table[i]['graph'] = graph.to_dict(
-                only=('id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date'))
-        news_table[i]['user'] = user.to_dict(only=('id', 'name', 'about', 'avatar'))
-    return flask.jsonify(
-        {
-            'news':
-                news_table
-        }
-    )
+    news_lst = db_sess.query(news.News)
+    res = []
+    for news_elem in news_lst:
+        res.append({
+            'news': news_elem.to_dict(only=('id', 'title', 'content', 'updated_date', 'updated_date', 'graph_id', 'user_id')),
+            'graph': db_sess.query(graphs.Graph).filter(graphs.Graph.id == news_elem.graph_id).first().to_dict(only=('id', 'name', 'preview', 'private')),
+            'user': db_sess.query(users.User).filter(users.User.id == news_elem.user_id).first().to_dict(only=('id', 'name', 'avatar', 'about')),
+        })
+
+    return flask.jsonify(res)
 
 
 @blueprint.route('/api/update_news/<int:news_id>', methods=['POST'])
