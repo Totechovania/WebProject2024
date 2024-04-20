@@ -32,15 +32,22 @@ def figure_from_array(data: np.array, mark_color):
 
 def graph_to_image(data: np.array, mode: str, color: tuple):
     not_defined = np.isnan(data)
+    zeros = (data[:] == 0)
+    print(zeros)
     data[not_defined] = 0
     data = sign(data[:])
 
     marking_colors = np.array([(255, 255, 255), (255, 0, 0), (0, 0, 255)], dtype='uint8')
     data = marking_colors[data]
 
+
+    if len(color) == 3:
+        graph_color = (*color, 215)
+
     if mode == '=':
         data = line_from_array(data)
         data = make_transparent_and_colorful(data, color)
+        data[zeros] = graph_color
     elif mode == '>':
         data = figure_from_array(data, marking_colors[1])
         data = make_transparent_and_colorful(data, (*color[:3], 125))
@@ -50,14 +57,15 @@ def graph_to_image(data: np.array, mode: str, color: tuple):
 
         line_data = line_from_array(line_data)
         line_data = make_transparent_and_colorful(line_data, color)
+        line_data[zeros] = graph_color
 
         figure_data = figure_from_array(figure_data, marking_colors[1])
         figure_data = make_transparent_and_colorful(figure_data, (*color[:3], 125))
 
         data = np.where(line_data[...] != (0, 0, 0, 0), line_data, figure_data)
 
-    data[not_defined] = (0, 0, 0, 0)
 
+    data[not_defined] = (0, 0, 0, 0)
     img = Image.fromarray(data)
 
     return img
