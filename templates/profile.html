@@ -25,7 +25,7 @@
                 <p>
                     <div id = "user_about_container">
                         <label class="form-label p-1" for="user_about">About:</label>
-                        <label id = "user_about"></label>
+                        <label id = "user_about" class="text-break"></label>
                     </div>
                     <div class="form-floating mb-3 mt-3" hidden="hidden" id="user_about_input_container">
                         <label class="form-label p-1" for="user_about_input">About:</label>
@@ -92,36 +92,37 @@
             </div>
         </div>
         <div class="col-sm-9 p-0">
-                <!-- Nav pills -->
-                  <ul class="nav nav-tabs bg-light" role="tablist">
-                    <li class="nav-item">
-                      <a class="nav-link active" data-bs-toggle="pill" href="#graphs_tab">Графики</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" data-bs-toggle="pill" href="#news_tab">Новости </a>
-                    </li>
-                  </ul>
+            <ul class="nav nav-tabs bg-light" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" data-bs-toggle="pill" href="#graphs_tab">Графики</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="pill" href="#news_tab">Новости </a>
+            </li>
+            </ul>
 
-                  <!-- Tab panes -->
-                  <div class="tab-content">
-                    <div id="graphs_tab" class="container-fluid tab-pane active"><br>
+            <!-- Tab panes -->
+            <div class="tab-content">
+            <div id="graphs_tab" class="container-fluid tab-pane active"><br>
 
-                        <div class="d-flex flex-wrap" id="graphs_container">
+                <div class="d-flex flex-wrap" id="graphs_container">
 
-                        </div>
+                </div>
 
-                    </div>
-                    <div id="news_tab" class="container tab-pane fade"><br>
-                      <h3>Menu 1</h3>
-                      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                    </div>
+            </div>
+                <div id="news_tab" class="container-fluid tab-pane fade"><br>
+                  <div class="d-flex flex-wrap p-2 " id="news_container">
+
                   </div>
+                </div>
+            </div>
         </div>
     </dev>
 </div>
 <script>let usr_id = {{usr_id}}</script>
-<script src="/static/js/user_info.js">
-</script>
-<script src="/static/js/add_graphs.js">
-</script>
+<script src="/static/js/user_info.js"></script>
+<script src="/static/js/add_graphs.js"></script>
+<script src="/static/js/generate_news_card.js"></script>
+<script src="/static/js/add_user_news.js"></script>
+<script src="/static/js/news_card_modes.js"></script>
 {% endblock %}

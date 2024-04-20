@@ -12,7 +12,7 @@ class News(SqlAlchemyBase, SerializerMixin):
                            primary_key=True, autoincrement=True)
     title = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     content = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    created_date = sqlalchemy.Column(sqlalchemy.DateTime,
+    updated_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
     is_private = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
     votes = sqlalchemy.Column(sqlalchemy.Integer, default=0)

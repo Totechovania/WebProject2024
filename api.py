@@ -378,20 +378,17 @@ def new_news():
 @blueprint.route('/api/open_news/<int:news_id>', methods=['GET'])
 def open_news(news_id):
     new = db_sess.query(news.News).filter(news.News.id == news_id).first()
+
     if not new:
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
+
     graph = db_sess.query(graphs.Graph).filter(graphs.Graph.user_id == new.graph_id).first()
-    user = db_sess.query(users.User).filter(users.User.user_id == new.id).first()
-    if new.is_private:
-        if new.News.user == current_user:
-            return flask.jsonify(new.to_dict(
-                only=('id', 'title', 'content', 'created_date', 'is_private', 'votes', 'graph_id', 'user_id')),
-                graph.to_dict(
-                    only=('id', 'private', 'name', 'function', 'preview', 'user_id', 'update_date', 'created_date')),
-                user.to_dict(only=('id', 'name', 'email', 'created_date', 'about')))
-        return flask.make_response(flask.jsonify({'error': 'Not Enough Rights'}), 401)
-    return flask.jsonify(new.to_dict(
-        only=('id', 'title', 'content', 'created_date', 'is_private', 'votes', 'graph_id', 'user_id')),
-        graph.to_dict(
-            only=('id', 'private', 'name', 'function', 'preview', 'user_id', 'update_date', 'created_date')),
-        user.to_dict(only=('id', 'name', 'created_date', 'about')))
+    user = db_sess.query(users.User).filter(users.User.id == new.id).first()
+
+    if new.is_private and new.user_id != current_user.id:
+        if new.user_id == current_user.id:
+            return flask.make_response(flask.jsonify({'error': 'Not Enough Rights'}), 401)
+
+    return flask.jsonify({'news': new.to_dict(only=('id', 'title', 'content', 'updated_date', 'is_private', 'votes', 'graph_id', 'user_id')),
+                          'graph': graph.to_dict(only=('id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date')),
+                            'user': user.to_dict(only=('id', 'name', 'about', 'avatar',))})
