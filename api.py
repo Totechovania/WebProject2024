@@ -336,6 +336,7 @@ def all_news():
 
 
 @blueprint.route('/api/update_news/<int:news_id>', methods=['POST'])
+@login_required
 def update_news(news_id):
     new = db_sess.query(news.News).filter(news.News.id == news_id,
                                           news.News.user == current_user).first()
@@ -343,11 +344,13 @@ def update_news(news_id):
         return flask.make_response(flask.jsonify({'error': 'Not Authenticated'}), 401)
     if not new:
         return flask.make_response(flask.jsonify({'error': 'Not Found or Not Enough Rights'}), 404)
-    if not all(key in flask.request.json.keys() for key in ['title', 'content', 'is_private']):
+    if not all(key in flask.request.json.keys() for key in ['title', 'content', 'graph_id']):
         return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
+    print(flask.request.json)
     new.title = flask.request.json['title']
     new.content = flask.request.json['content']
-    new.is_private = flask.request.json['is_private']
+    new.graph_id = flask.request.json['graph_id']
+    new.updated_date = datetime.datetime.now()
     db_sess.commit()
     return flask.jsonify({'success': 'OK'})
 
@@ -388,7 +391,7 @@ def open_news(news_id):
     if not new:
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
 
-    graph = db_sess.query(graphs.Graph).filter(graphs.Graph.user_id == new.graph_id).first()
+    graph = db_sess.query(graphs.Graph).filter(graphs.Graph.id == new.graph_id).first()
     user = db_sess.query(users.User).filter(users.User.id == new.id).first()
 
     if new.is_private and new.user_id != current_user.id:

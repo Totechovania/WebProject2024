@@ -12,6 +12,10 @@ function edit_news_mode(card_id) {
 
     document.getElementById('cancel_btn' + card_id).hidden = false;
     document.getElementById('save_btn' + card_id).hidden = false;
+
+    document.getElementById('news_graph_select' + card_id).hidden = false;
+
+    generate_select_options(card_id);
 }
 
 function normal_news_mode(card_id) {
@@ -26,4 +30,8 @@ function normal_news_mode(card_id) {
 
     document.getElementById('cancel_btn' + card_id).hidden = true;
     document.getElementById('save_btn' + card_id).hidden = true;
+
+    document.getElementById('news_graph_select' + card_id).hidden = true;
+
+    select_graph(card_id, Number(document.getElementById('graph_id_label' + card_id).innerHTML));
 }
