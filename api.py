@@ -52,7 +52,6 @@ def user_news(user_id):
         news_lst = db_sess.query(news.News).filter(news.News.user == current_user)
     else:
         news_lst = db_sess.query(news.News).filter(news.News.is_private != True, news.News.user_id == user_id)
-    graphs_lst = db_sess.query(graphs.Graph).filter(graphs.Graph.user_id == user_id)
     user = db_sess.query(users.User).filter(users.User.id == user_id).first()
     res = []
     for news_elem in news_lst:
@@ -70,7 +69,6 @@ def user_news(user_id):
 @blueprint.route('/api/delete_graph/<int:graph_id>', methods=['DELETE'])
 @login_required
 def delete_graph(graph_id):
-    print(graph_id)
     graph = db_sess.query(graphs.Graph).get(graph_id)
     if not graph:
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)
@@ -279,14 +277,11 @@ def update_news(news_id):
     if not all(key in flask.request.json.keys() for key in ['title', 'content', 'graph_id']):
         return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
 
-    print([int(flask.request.json['graph_id']), new.graph_id])
-
     new.title = flask.request.json['title']
     new.content = flask.request.json['content']
     new.graph_id = int(flask.request.json['graph_id'])
     new.updated_date = datetime.datetime.now()
     db_sess.commit()
-    print([int(flask.request.json['graph_id']), new.graph_id])
     return flask.jsonify({'success': 'OK'})
 
 
