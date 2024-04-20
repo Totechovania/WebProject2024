@@ -2,7 +2,6 @@ from data import db_session
 from flask import Flask
 from flask_login import LoginManager
 import os
-from data import users
 
 
 def init_all():
@@ -16,7 +15,3 @@ def init_all():
     login_manager = LoginManager()
     login_manager.init_app(app)
     return app, login_manager
-
-
-def load_user_db(user_id):
-    return db_session.create_session().query(users.User).get(user_id)

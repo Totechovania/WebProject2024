@@ -1,4 +1,4 @@
-from utilities.system import init_all, load_user_db
+from utilities.system import init_all
 from flask import redirect, render_template, make_response
 from flask_login import login_user, login_required, logout_user, current_user
 from forms.user import RegisterForm, LoginForm
@@ -19,7 +19,7 @@ def logout():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return load_user_db(user_id)
+    return db_sess.query(User).get(user_id)
 
 
 @app.route('/sign_up', methods=['GET', 'POST'])
@@ -92,9 +92,6 @@ def self_profile():
     return redirect('/profile/' + str(current_user.id))
 
 
-
-
-
 @app.route('/new_graph', methods=['GET', 'PUT'])
 def new_graph_page():
     return render_template('new_graph.html', title='Новый график')
@@ -106,9 +103,8 @@ def graph_page(id):
     if not graph:
         return make_response('Not found', 404)
     if graph.private and (not current_user.is_authenticated or current_user.id != graph.user_id):
-        return make_response('Not found', 404)
+        return make_response('Not Enough Rights', 401)
     return render_template('graph.html', title='График', graph=graph)
-
 
 
 @app.route('/', methods=['GET'])

@@ -1,5 +1,5 @@
 import base64
-import random
+from random import randint
 from io import BytesIO
 import flask
 from data import db_session, graphs, users, news, codes
@@ -51,7 +51,7 @@ def user_news(user_id):
     if current_user.is_authenticated and current_user.id == user_id:
         news_lst = db_sess.query(news.News).filter(news.News.user == current_user)
     else:
-        news_lst = db_sess.query(news.News).filter( news.News.user_id == user_id)
+        news_lst = db_sess.query(news.News).filter(news.News.user_id == user_id)
     user = db_sess.query(users.User).filter(users.User.id == user_id).first()
     res = []
     for news_elem in news_lst:
@@ -339,23 +339,16 @@ def open_news(news_id):
 @blueprint.route('/api/generate_code/<email>', methods=['POST'])
 def generate_code(email):
     validation_object = db_sess.query(codes.Codes).filter(codes.Codes.email == email).first()
-    if not validation_object:
-        code = random.randint(100000, 999999)
-        send_email(code, email)
-
-        validation_object = codes.Codes()
-        validation_object.email = email
-        validation_object.code = code
-
-        db_sess.add(validation_object)
+    if validation_object:
+        db_sess.delete(validation_object)
         db_sess.commit()
-        return flask.make_response(flask.jsonify({'success': 'OK'}), 200)
-    else:
-        if datetime.datetime.now() - validation_object.update_date > datetime.timedelta(minutes=10):
-            return flask.make_response(flask.jsonify({'error': 'Not found or too old'}), 404)
-        elif datetime.datetime.now() - validation_object.update_date < datetime.timedelta(minutes=1):
-            validation_object.update_date = datetime.datetime.now()
-            db_sess.commit()
-            return flask.make_response(flask.jsonify({'success': 'OK'}), 200)
-        else:
-            return flask.make_response(flask.jsonify({'error': 'Too many requests'}), 429)
+    code = randint(100000, 999999)
+    send_email(code, email)
+
+    validation_object = codes.Codes()
+    validation_object.email = email
+    validation_object.code = code
+
+    db_sess.add(validation_object)
+    db_sess.commit()
+    return flask.make_response(flask.jsonify({'success': 'OK'}), 200)
