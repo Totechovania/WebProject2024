@@ -94,24 +94,25 @@
         <div class="col-sm-9 p-0">
             <ul class="nav nav-tabs bg-light" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" data-bs-toggle="pill" href="#graphs_tab">Графики</a>
+              <a class="nav-link active" data-bs-toggle="pill" href="#news_tab">Новости </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="pill" href="#news_tab">Новости </a>
+              <a class="nav-link" data-bs-toggle="pill" href="#graphs_tab">Графики</a>
             </li>
             </ul>
 
             <!-- Tab panes -->
             <div class="tab-content">
-            <div id="graphs_tab" class="container-fluid tab-pane active"><br>
+            <div id="graphs_tab" class="container-fluid tab-pane fade "><br>
 
-                <div class="d-flex flex-wrap" id="graphs_container">
+                <div class="d-flex flex-wrap-reverse" id="graphs_container">
 
                 </div>
 
             </div>
-                <div id="news_tab" class="container-fluid tab-pane fade"><br>
-                  <div class="d-flex flex-wrap p-2 " id="news_container">
+                <div id="news_tab" class="container-fluid tab-pane active"><br>
+                    <button class="btn bg-light text-secondary p-2" onclick="add_news()">Новая публикация</button>
+                  <div class="d-flex flex-wrap-reverse p-2 " id="news_container">
 
                   </div>
                 </div>
@@ -127,4 +128,6 @@
 <script src="/static/js/news_card_modes.js"></script>
 <script src="/static/js/graph_select.js"></script>
 <script src="/static/js/save_news.js"></script>
+<script src="/static/js/delete_news.js"></script>
+<script src="/static/js/add_news.js"></script>
 {% endblock %}

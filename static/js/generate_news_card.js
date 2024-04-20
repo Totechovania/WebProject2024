@@ -50,7 +50,7 @@ function generate_news_card(info, card_id) {
                                     </div>`
 
 
-    return `<div class="d-flex flex-row p-0">
+    return `<div class="d-flex flex-row p-1" id="news_card${card_id}">
                     <div class="card rounded-end-0">
                         <div class="card-header" id="card_header${card_id}">
                             ${user_name_element_str}
@@ -59,7 +59,7 @@ function generate_news_card(info, card_id) {
                                 ${news_element_str}
                         </div>
                         <div class="card-footer d-flex flex-row justify-content-end p-1">
-                            <div class="btn p-1 text-danger" onclick="delete_news(${news_info.id}, ${card_id})" id="del_btn${card_id}" ${news_info.user_id===cur_user_id ? '' : 'hidden="hidden"'} > Удалить</div>
+                            <div class="btn p-1 text-danger" onclick="delete_news(${news_info.id}, ${card_id})" id="del_btn${card_id}" ${news_info.user_id===cur_user_id ? '' : 'hidden="hidden"'}"  onclick= "delete_news(${news_info.id})" > Удалить</div>
                             <div class="btn p-1 text-secondary" onclick="edit_news_mode(${card_id})" id="edit_btn${card_id}" ${news_info.user_id===cur_user_id ? '' : 'hidden="hidden"'} > Редактировать</div>
                             <div class="btn p-1 text-secondary" hidden="hidden" id="cancel_btn${card_id}" onclick="normal_news_mode(${card_id})"> Отменить</div>
                             <div class="btn p-1 text-primary" hidden="hidden" id="save_btn${card_id}" onclick="save_news(${news_info.id}, ${card_id})"> Сохранить</div>

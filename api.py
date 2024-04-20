@@ -47,23 +47,20 @@ def user_graphs(user_id):
 @blueprint.route('/api/user_news/<int:user_id>', methods=['GET'])
 def user_news(user_id):
     if current_user.is_authenticated and current_user.id == user_id:
-        new = db_sess.query(news.News).filter(news.News.user == current_user)
+        news_lst = db_sess.query(news.News).filter(news.News.user == current_user)
     else:
-        new = db_sess.query(news.News).filter(news.News.is_private != True, news.News.user_id == user_id)
-    graph = db_sess.query(graphs.Graph).filter(graphs.Graph.user_id == user_id)
+        news_lst = db_sess.query(news.News).filter(news.News.is_private != True, news.News.user_id == user_id)
+    graphs_lst = db_sess.query(graphs.Graph).filter(graphs.Graph.user_id == user_id)
     user = db_sess.query(users.User).filter(users.User.id == user_id).first()
-    return flask.jsonify(
-        {
-            'news':
-                [item.to_dict(only=(
-                    'id', 'title', 'content', 'updated_date', 'is_private', 'votes', 'graph_id', 'user_id'))
-                    for item in new],
-            'graphs': [item.to_dict(only=(
-                'id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date'))
-                for item in graph],
+    res = []
+    for news_elem, graph in zip(news_lst, graphs_lst):
+        res.append({
+            'news': news_elem.to_dict(only=('id', 'title', 'content', 'updated_date', 'is_private', 'votes', 'graph_id', 'user_id')),
+            'graph': graph.to_dict(only=('id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date')),
             'user': user.to_dict(only=('id', 'name', 'about', 'avatar'))
-        }
-    )
+        })
+
+    return flask.jsonify(res)
 
 
 '''
@@ -372,13 +369,14 @@ def delete_news(news_id):
 def new_news():
     if not current_user.is_authenticated:
         return flask.make_response(flask.jsonify({'error': 'Not Authenticated'}), 401)
-    if not all(key in flask.request.json.keys() for key in ['title', 'content', 'is_private']):
+    if not all(key in flask.request.json.keys() for key in ['title', 'content', 'graph_id']):
         return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
     new = news.News()
     new.title = flask.request.json['title']
     new.content = flask.request.json['content']
-    new.is_private = flask.request.json['is_private']
-    current_user.news.append(news)
+    new.graph_id = flask.request.json['graph_id']
+    new.user_id = current_user.id
+    current_user.news.append(new)
     db_sess.merge(current_user)
     db_sess.commit()
     return flask.jsonify({'success': 'OK'})
