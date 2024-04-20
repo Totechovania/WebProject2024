@@ -111,9 +111,7 @@
 
             </div>
                 <div id="news_tab" class="container-fluid tab-pane active"><br>
-                    {% if usr_id == cur_user_id %}
-                    <button class="btn bg-light text-secondary p-2" onclick="add_news()">Новая публикация</button>
-                    {% endif %}
+                    <button class="btn bg-light text-secondary p-2" onclick="add_news()" id="publish_btn">Новая публикация</button>
                     <div class="d-flex flex-wrap-reverse p-2 " id="news_container">
 
                   </div>
@@ -122,7 +120,11 @@
         </div>
     </dev>
 </div>
-<script>let usr_id = {{usr_id}}</script>
+<script>let usr_id = {{usr_id}}
+if (usr_id != cur_user_id) {
+    document.getElementById('publish_btn').hidden = true;
+}
+</script>
 <script src="/static/js/user_info.js"></script>
 <script src="/static/js/add_graphs.js"></script>
 <script src="/static/js/generate_news_card.js"></script>
