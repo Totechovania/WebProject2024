@@ -51,8 +51,7 @@ def user_news(user_id):
     if current_user.is_authenticated and current_user.id == user_id:
         news_lst = db_sess.query(news.News).filter(news.News.user == current_user)
     else:
-        news_lst = db_sess.query(news.News).filter(news.News.is_private != True, news.News.user_id == user_id)
-    graphs_lst = db_sess.query(graphs.Graph).filter(graphs.Graph.user_id == user_id)
+        news_lst = db_sess.query(news.News).filter( news.News.user_id == user_id)
     user = db_sess.query(users.User).filter(users.User.id == user_id).first()
     res = []
     for news_elem in news_lst:
