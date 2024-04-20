@@ -51,7 +51,7 @@ def user_news(user_id):
     if current_user.is_authenticated and current_user.id == user_id:
         news_lst = db_sess.query(news.News).filter(news.News.user == current_user)
     else:
-        news_lst = db_sess.query(news.News).filter(news.News.user_id == user_id)
+        news_lst = db_sess.query(news.News).filter(news.News.is_private != True, news.News.user_id == user_id)
     graphs_lst = db_sess.query(graphs.Graph).filter(graphs.Graph.user_id == user_id)
     user = db_sess.query(users.User).filter(users.User.id == user_id).first()
     res = []
@@ -278,14 +278,11 @@ def update_news(news_id):
     if not all(key in flask.request.json.keys() for key in ['title', 'content', 'graph_id']):
         return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
 
-    print([int(flask.request.json['graph_id']), new.graph_id])
-
     new.title = flask.request.json['title']
     new.content = flask.request.json['content']
     new.graph_id = int(flask.request.json['graph_id'])
     new.updated_date = datetime.datetime.now()
     db_sess.commit()
-    print([int(flask.request.json['graph_id']), new.graph_id])
     return flask.jsonify({'success': 'OK'})
 
 
