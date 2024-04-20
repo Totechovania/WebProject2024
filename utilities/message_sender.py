@@ -16,7 +16,3 @@ def send_email(message, recipient):
         return "Message sent successfully!"
     except Exception as er:
         return f'{er}\n Error'
-
-
-def generate_code():
-    return randint(100000, 999999)

@@ -1,13 +1,15 @@
 import base64
+import random
 from io import BytesIO
 import flask
-from data import db_session, graphs, users, news
+from data import db_session, graphs, users, news, codes
 import datetime
 from GraphDrawer.GraphDrawer import GraphDrawer
 from utilities.draw import hex_to_rgb
 from flask_login import current_user, login_required
 from utilities.avatar_to_bytes import avatar_to_bytes
 from utilities.generate_graph_preview import generate_graph_preview
+from utilities.message_sender import send_email
 
 blueprint = flask.Blueprint(
     'api',
@@ -331,3 +333,27 @@ def open_news(news_id):
         'graph': graph.to_dict(
             only=('id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date')),
         'user': user.to_dict(only=('id', 'name', 'about', 'avatar'))})
+
+
+@blueprint.route('/api/generate_code/<email>', methods=['GET'])
+def generate_code(email):
+    validation_object = db_sess.query(codes.Codes).filter(codes.Codes.email == email).first()
+    if not validation_object:
+        code = random.randint(100000, 999999)
+        send_email(code, email)
+
+        validation_object = codes.Codes()
+        validation_object.email = email
+        validation_object.code = code
+
+        db_sess.add(validation_object)
+        db_sess.commit()
+        return flask.make_response(flask.jsonify({'success': 'OK'}), 200)
+    else:
+        if validation_object.update_date - datetime.datetime.now() > datetime.timedelta(minutes=1):
+            validation_object.update_date = datetime.datetime.now()
+            db_sess.commit()
+            return flask.make_response(flask.jsonify({'success': 'OK'}), 200)
+        else:
+            return flask.make_response(flask.jsonify({'error': 'Too many requests'}), 429)
+

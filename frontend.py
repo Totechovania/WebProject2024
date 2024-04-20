@@ -40,6 +40,7 @@ def sign_up_page():
         code = generate_code()
         print(send_email(code, form.email.data))
         print(code, form.email.data)
+
         user = User(
             name=form.name.data,
             email=form.email.data,
