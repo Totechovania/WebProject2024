@@ -1,5 +1,5 @@
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image
 from GraphDrawer.formulas_parsing import parse_formulas
 from GraphDrawer.function_generation import generate_graph_fun, generate_vars_fun
 from GraphDrawer.image_utilities import graph_to_image, draw_coords
@@ -63,6 +63,3 @@ class GraphDrawer:
             res = Image.alpha_composite(res, im)
 
         return res
-
-
-

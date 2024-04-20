@@ -57,13 +57,14 @@ def user_news(user_id):
     res = []
     for news_elem in news_lst:
         res.append({
-            'news': news_elem.to_dict(only=('id', 'title', 'content', 'updated_date', 'is_private', 'votes', 'graph_id', 'user_id')),
-            'graph': db_sess.query(graphs.Graph).filter(graphs.Graph.id == news_elem.graph_id).first().to_dict(only=('id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date')),
+            'news': news_elem.to_dict(
+                only=('id', 'title', 'content', 'updated_date', 'is_private', 'votes', 'graph_id', 'user_id')),
+            'graph': db_sess.query(graphs.Graph).filter(graphs.Graph.id == news_elem.graph_id).first().to_dict(
+                only=('id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date')),
             'user': user.to_dict(only=('id', 'name', 'about', 'avatar'))
         })
 
     return flask.jsonify(res)
-
 
 
 @blueprint.route('/api/delete_graph/<int:graph_id>', methods=['DELETE'])
@@ -256,9 +257,12 @@ def all_news():
     res = []
     for news_elem in news_lst:
         res.append({
-            'news': news_elem.to_dict(only=('id', 'title', 'content', 'updated_date', 'updated_date', 'graph_id', 'user_id')),
-            'graph': db_sess.query(graphs.Graph).filter(graphs.Graph.id == news_elem.graph_id).first().to_dict(only=('id', 'name', 'preview', 'private')),
-            'user': db_sess.query(users.User).filter(users.User.id == news_elem.user_id).first().to_dict(only=('id', 'name', 'avatar', 'about')),
+            'news': news_elem.to_dict(
+                only=('id', 'title', 'content', 'updated_date', 'updated_date', 'graph_id', 'user_id')),
+            'graph': db_sess.query(graphs.Graph).filter(graphs.Graph.id == news_elem.graph_id).first().to_dict(
+                only=('id', 'name', 'preview', 'private')),
+            'user': db_sess.query(users.User).filter(users.User.id == news_elem.user_id).first().to_dict(
+                only=('id', 'name', 'avatar', 'about')),
         })
 
     return flask.jsonify(res)
@@ -360,4 +364,3 @@ def generate_code(email):
             return flask.make_response(flask.jsonify({'success': 'OK'}), 200)
         else:
             return flask.make_response(flask.jsonify({'error': 'Too many requests'}), 429)
-

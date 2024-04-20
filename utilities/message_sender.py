@@ -1,5 +1,4 @@
 import smtplib
-from random import randint
 
 
 def send_email(message, recipient):

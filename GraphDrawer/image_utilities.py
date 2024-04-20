@@ -1,8 +1,8 @@
 import numpy as np
-from PIL import Image, ImageFilter, ImageDraw, ImageFont
+from PIL import Image, ImageFilter, ImageDraw
 
 
-def make_transparent_and_colorful(data: np.array, graph_color,):
+def make_transparent_and_colorful(data: np.array, graph_color, ):
     if len(graph_color) == 3:
         graph_color = (*graph_color, 215)
 
@@ -40,7 +40,6 @@ def graph_to_image(data: np.array, mode: str, color: tuple):
     marking_colors = np.array([(255, 255, 255), (255, 0, 0), (0, 0, 255)], dtype='uint8')
     data = marking_colors[data]
 
-
     if len(color) == 3:
         graph_color = (*color, 215)
 
@@ -64,7 +63,6 @@ def graph_to_image(data: np.array, mode: str, color: tuple):
 
         data = np.where(line_data[...] != (0, 0, 0, 0), line_data, figure_data)
 
-
     data[not_defined] = (0, 0, 0, 0)
     img = Image.fromarray(data)
 
@@ -81,7 +79,7 @@ def sign(i):
         return 2
 
 
-def draw_coords(img_w: int = 1000, img_h: int = 1000, units_per_pixel: float = 0.1, c_x: float = 0, c_y: float = 0,):
+def draw_coords(img_w: int = 1000, img_h: int = 1000, units_per_pixel: float = 0.1, c_x: float = 0, c_y: float = 0, ):
     img = Image.new('RGBA', (img_w, img_h), (255, 255, 255, 255))
     draw = ImageDraw.Draw(img)
 

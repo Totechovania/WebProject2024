@@ -22,7 +22,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     avatar = sqlalchemy.Column(sqlalchemy.LargeBinary, nullable=True)
 
     about = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    
+
     graphs = orm.relationship('Graph', back_populates='user')
     news = orm.relationship("News", back_populates='user')
 
