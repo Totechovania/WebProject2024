@@ -33,7 +33,7 @@ def figure_from_array(data: np.array, mark_color):
 def graph_to_image(data: np.array, mode: str, color: tuple):
     not_defined = np.isnan(data)
     zeros = (data[:] == 0)
-    print(zeros)
+
     data[not_defined] = 0
     data = sign(data[:])
 

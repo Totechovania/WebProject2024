@@ -69,7 +69,6 @@ def user_news(user_id):
 @blueprint.route('/api/delete_graph/<int:graph_id>', methods=['DELETE'])
 @login_required
 def delete_graph(graph_id):
-    print(graph_id)
     graph = db_sess.query(graphs.Graph).get(graph_id)
     if not graph:
         return flask.make_response(flask.jsonify({'error': 'Not found'}), 404)

@@ -48,7 +48,7 @@ def check_formula(formula: str):
         return False
 
     for sym in formula:
-        if not (sym.isalnum() or sym in '+-*/_,(). '):
+        if not (sym.isalnum() or sym in '+-*/_,().% '):
             return False
 
     return True
