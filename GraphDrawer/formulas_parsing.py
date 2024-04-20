@@ -40,7 +40,7 @@ def parse_formulas(lst, colors):
             formulas.append(f1 + ' - (' + f2 + ')')
             cases.append(case)
 
-    return formulas, res_colors, cases,  variables
+    return formulas, res_colors, cases, variables
 
 
 def check_formula(formula: str):
@@ -52,5 +52,3 @@ def check_formula(formula: str):
             return False
 
     return True
-
-

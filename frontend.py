@@ -25,7 +25,6 @@ def load_user(user_id):
     return load_user_db(user_id)
 
 
-
 @app.route('/sign_up', methods=['GET', 'POST'])
 def sign_up_page():
     form = RegisterForm()

@@ -1,6 +1,5 @@
 import base64
 from io import BytesIO
-from PIL import Image
 from utilities.draw import hex_to_rgb
 from GraphDrawer.GraphDrawer import GraphDrawer
 

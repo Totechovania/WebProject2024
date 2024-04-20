@@ -3,39 +3,39 @@
 
 <div class="container-fluid xl">
 </div>
-        <div class="row">
+<div class="row">
 
-            <div class="col-sm-4 bg-light text-white">
-                <style>input {width: 100%;}</style>
-                <div class="d-flex flex-column" id="formulas">
-                </div>
-                <button type="button" class="btn w-100" id="new_btn">
-                        <div class="d-flex flex-row  p-1 bg-light border-1" onclick="add_formula()">
-                            new
-                        </div>
-                </button>
-            </div>
-            <div class="col-sm-8 p-0">
-
-                <div class="d-flex flex-row bg-light border-1 p-2">
-                    <label class="form-label p-1" for="img_width">width:</label>
-                    <input type="number" id="img_width" placeholder="1000">
-                    <label class="form-label p-1" for="img_height">height:</label>
-                    <input type="number" id="img_height" placeholder="1000">
-                    <label class="form-label p-1" for="center_x">x:</label>
-                    <input type="number" id="center_x" placeholder="0">
-                    <label class="form-label p-1" for="center_y">y:</label>
-                    <input type="number" id="center_y" placeholder="0">
-
-                    <label class="form-label p-1" for="pixel_per_unit">scale:</label>
-                    <input type="number" id="pixel_per_unit" placeholder="100">
-
-                    <button type="button" class="btn btn-primary" id="draw_btn" onclick="draw()">Draw</button>
-                </div>
-                <img class="img-fluid" src="/static/coords.png" alt="No img" id="graph_img">
-            </div>
+    <div class="col-sm-4 bg-light text-white">
+        <style>input {width: 100%;}</style>
+        <div class="d-flex flex-column" id="formulas">
         </div>
-  </div>
+        <button type="button" class="btn w-100" id="new_btn">
+            <div class="d-flex flex-row  p-1 bg-light border-1" onclick="add_formula()">
+                new
+            </div>
+        </button>
+    </div>
+    <div class="col-sm-8 p-0">
+
+        <div class="d-flex flex-row bg-light border-1 p-2">
+            <label class="form-label p-1" for="img_width">width:</label>
+            <input type="number" id="img_width" placeholder="1000">
+            <label class="form-label p-1" for="img_height">height:</label>
+            <input type="number" id="img_height" placeholder="1000">
+            <label class="form-label p-1" for="center_x">x:</label>
+            <input type="number" id="center_x" placeholder="0">
+            <label class="form-label p-1" for="center_y">y:</label>
+            <input type="number" id="center_y" placeholder="0">
+
+            <label class="form-label p-1" for="pixel_per_unit">scale:</label>
+            <input type="number" id="pixel_per_unit" placeholder="100">
+
+            <button type="button" class="btn btn-primary" id="draw_btn" onclick="draw()">Draw</button>
+        </div>
+        <img class="img-fluid" src="/static/coords.png" alt="No img" id="graph_img">
+    </div>
+</div>
+</div>
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-bottom">
     <div class="container-fluid">
         <div class="collapse navbar-collapse" id="mynavbar">
@@ -61,12 +61,16 @@
             </ul>
             {% if current_user.is_authenticated and current_user.id == graph.user_id %}
             <li class="nav-item">
-                <button type="button" class="btn text-danger" id="delete_graph_btn" onclick="delete_graph()">Удалить</button>
-                <button type="button" class="btn btn-primary" id="save_graph_changes_btn" onclick="save_graph_changes()">Сохранить изменения</button>
+                <button type="button" class="btn text-danger" id="delete_graph_btn" onclick="delete_graph()">Удалить
+                </button>
+                <button type="button" class="btn btn-primary" id="save_graph_changes_btn"
+                        onclick="save_graph_changes()">Сохранить изменения
+                </button>
             </li>
             {% elif current_user.is_authenticated %}
             <li class="nav-item">
-                <button type="button" class="btn btn-primary" id="save_graph_btn" onclick="save_graph()">Сохранить</button>
+                <button type="button" class="btn btn-primary" id="save_graph_btn" onclick="save_graph()">Сохранить
+                </button>
             </li>
             {% else %}
             <li class="nav-item">
@@ -90,5 +94,6 @@
         e.preventDefault();
     }
     window.addEventListener('beforeunload', beforeunload_handler);
+
 </script>
 {% endblock %}
