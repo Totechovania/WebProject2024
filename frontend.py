@@ -1,13 +1,10 @@
 from utilities.system import init_all, load_user_db
-from flask import redirect, render_template, abort, request, make_response
+from flask import redirect, render_template, make_response
 from flask_login import login_user, login_required, logout_user, current_user
 from forms.user import RegisterForm, LoginForm
-from forms.news import NewsForm
-from data.news import News
 from data.users import User
 from data.codes import Codes
 from data import db_session, graphs, codes
-from utilities.message_sender import send_email
 
 app, login_manager = init_all()
 db_sess = db_session.create_session()
@@ -95,9 +92,7 @@ def self_profile():
     return redirect('/profile/' + str(current_user.id))
 
 
-@app.route('/graphs', methods=['GET'])
-def graphs_page():
-    return render_template('.html', title='Графики')
+
 
 
 @app.route('/new_graph', methods=['GET', 'PUT'])
@@ -115,15 +110,6 @@ def graph_page(id):
     return render_template('graph.html', title='График', graph=graph)
 
 
-@app.route('/settings', methods=['GET', 'POST'])
-def settings_page():
-    return render_template('.html', title='Настройки')
-
-
-@app.route('/projects', methods=['GET'])
-def projects_page():
-    return render_template('.html', title='Проекты')
-
 
 @app.route('/', methods=['GET'])
 @app.route('/social_media', methods=['GET'])
@@ -133,7 +119,7 @@ def social_media_main_page():
 
 @app.errorhandler(404)
 def error_404(_):
-    return 'Error'
+    return 'Error 404 (Not Found or Not Enough Rights)'
 
 
 @app.errorhandler(401)
