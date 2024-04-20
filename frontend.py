@@ -5,7 +5,8 @@ from forms.user import RegisterForm, LoginForm
 from forms.news import NewsForm
 from data.news import News
 from data.users import User
-from data import db_session, graphs
+from data.codes import Codes
+from data import db_session, graphs, codes
 from utilities.message_sender import send_email
 
 app, login_manager = init_all()
@@ -37,9 +38,23 @@ def sign_up_page():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Такой пользователь уже есть")
-        code = generate_code()
-        print(send_email(code, form.email.data))
-        print(code, form.email.data)
+
+        if not form.code.data:
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Заполните поле код подтверждения")
+
+        code = db_sess.query(Codes).filter(codes.Code.email == form.email.data).first()
+
+        if not code:
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Код подтверждения не существует")
+
+        if form.code.data != code.code:
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Неправильный код подтверждения")
 
         user = User(
             name=form.name.data,

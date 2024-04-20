@@ -15,15 +15,13 @@
         {% endfor %}
     </p>
     <p>
-        <div id="code_input" hidden>
         {{ form.code.label  }}<br>
         {{ form.code(class="form-control") }}<br>
         {% for error in form.code.errors %}
-            <p class="alert alert-danger" role="alert" id="code_error">
+            <p class="alert alert-danger" role="alert">
                 {{ error }}
             </p>
         {% endfor %}
-        </div>
         <button type="button" class="btn btn-primary" onclick="send_code()">Отправить код</button>
     </p>
     <p>
@@ -59,21 +57,18 @@
 </form>
 </div>
 <script>
-    document.getElementById("code_input").hidden = true;
-
     function send_code() {
-        document.getElementById("code_input").hidden = false;
         if (document.getElementById("email").value == "") {
-            document.getElementById('code_error').innerHTML = "Поле email не может быть пустым"
+            alert("Email не может быть пустым");
             return
         }
         xmlhttp_send_code = new XMLHttpRequest();
         xmlhttp_send_code.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 429) {
-                document.getElementById('code_error').innerHTML = "Слишком много запросов"
+                alert('Слишком много запросов. Попробуйте позже')
             }
         }
-        xmlhttp_send_code.open( "POST", "/api/send_code/" + document.getElementById("email").value, true );
+        xmlhttp_send_code.open( "POST", "/api/generate_code/" + document.getElementById("email").value, true );
         xmlhttp_send_code.send();
     }
 </script>
