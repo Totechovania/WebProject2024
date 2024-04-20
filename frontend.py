@@ -50,7 +50,6 @@ def sign_up_page():
                                    form=form,
                                    message="Код подтверждения не существует")
 
-        print(form.code.data, code.code)
         if int(form.code.data) != code.code:
             return render_template('register.html', title='Регистрация',
                                    form=form,
