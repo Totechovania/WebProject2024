@@ -350,7 +350,7 @@ def generate_code(email):
         db_sess.commit()
         return flask.make_response(flask.jsonify({'success': 'OK'}), 200)
     else:
-        if validation_object.update_date - datetime.datetime.now() > datetime.timedelta(minutes=1):
+        if datetime.datetime.now() - validation_object.update_date < datetime.timedelta(minutes=1):
             validation_object.update_date = datetime.datetime.now()
             db_sess.commit()
             return flask.make_response(flask.jsonify({'success': 'OK'}), 200)

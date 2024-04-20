@@ -44,14 +44,15 @@ def sign_up_page():
                                    form=form,
                                    message="Заполните поле код подтверждения")
 
-        code = db_sess.query(Codes).filter(codes.Code.email == form.email.data).first()
+        code = db_sess.query(Codes).filter(codes.Codes.email == form.email.data).first()
 
         if not code:
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Код подтверждения не существует")
 
-        if form.code.data != code.code:
+        print(form.code.data, code.code)
+        if int(form.code.data) != code.code:
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Неправильный код подтверждения")
