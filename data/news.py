@@ -14,7 +14,7 @@ class News(SqlAlchemyBase, SerializerMixin):
     content = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     updated_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
-    is_private = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+    is_private = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     votes = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     graph_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('graphs.id'))
     categories = orm.relationship("Category",
