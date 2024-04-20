@@ -55,10 +55,10 @@ def user_news(user_id):
     graphs_lst = db_sess.query(graphs.Graph).filter(graphs.Graph.user_id == user_id)
     user = db_sess.query(users.User).filter(users.User.id == user_id).first()
     res = []
-    for news_elem, graph in zip(news_lst, graphs_lst):
+    for news_elem in news_lst:
         res.append({
             'news': news_elem.to_dict(only=('id', 'title', 'content', 'updated_date', 'is_private', 'votes', 'graph_id', 'user_id')),
-            'graph': graph.to_dict(only=('id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date')),
+            'graph': db_sess.query(graphs.Graph).filter(graphs.Graph.id == news_elem.graph_id).first().to_dict(only=('id', 'private', 'name', 'preview', 'user_id', 'update_date', 'created_date')),
             'user': user.to_dict(only=('id', 'name', 'about', 'avatar'))
         })
 
@@ -267,20 +267,22 @@ def all_news():
 @blueprint.route('/api/update_news/<int:news_id>', methods=['POST'])
 @login_required
 def update_news(news_id):
-    new = db_sess.query(news.News).filter(news.News.id == news_id,
-                                          news.News.user == current_user).first()
+    new = db_sess.query(news.News).filter(news.News.id == news_id, news.News.user == current_user).first()
     if not current_user.is_authenticated:
         return flask.make_response(flask.jsonify({'error': 'Not Authenticated'}), 401)
     if not new:
         return flask.make_response(flask.jsonify({'error': 'Not Found or Not Enough Rights'}), 404)
     if not all(key in flask.request.json.keys() for key in ['title', 'content', 'graph_id']):
         return flask.make_response(flask.jsonify({'error': 'Bad request'}), 400)
-    print(flask.request.json)
+
+    print([int(flask.request.json['graph_id']), new.graph_id])
+
     new.title = flask.request.json['title']
     new.content = flask.request.json['content']
-    new.graph_id = flask.request.json['graph_id']
+    new.graph_id = int(flask.request.json['graph_id'])
     new.updated_date = datetime.datetime.now()
     db_sess.commit()
+    print([int(flask.request.json['graph_id']), new.graph_id])
     return flask.jsonify({'success': 'OK'})
 
 
