@@ -9,6 +9,10 @@ class GraphDrawer:
     def __init__(self, img_w: int = 1000, img_h: int = 1000,
                  units_per_pixel: float = 0.1, c_x: float = 0, c_y: float = 0,
                  frames: int = 1):
+        if type(img_w) is not int or type(img_h) is not int:
+            raise TypeError('img_w and img_h must be int type')
+        if units_per_pixel <= 0:
+            raise ValueError('units_per_pixel must be positive')
         self.img_w = img_w
         self.img_h = img_h
         self.units_per_pixel = units_per_pixel

@@ -206,12 +206,19 @@ def draw():
     colors = json['colors']
     for i in range(len(colors)):
         colors[i] = hex_to_rgb(colors[i][1:])
-
-    drawer = GraphDrawer(int(json['width']),
+    try:
+        drawer = GraphDrawer(int(json['width']),
                          int(json['height']),
                          1 / float(json['pixel_per_unit']),
                          float(json['center_x']),
                          float(json['center_y']))
+    except ValueError as e:
+        return flask.make_response(flask.jsonify({'error': 'Bad request ' + str(e)}), 400)
+    except TypeError as e:
+        return flask.make_response(flask.jsonify({'error': 'Bad request ' + str(e)}), 400)
+    except ZeroDivisionError as e:
+        return flask.make_response(flask.jsonify({'error': 'Bad request ' + str(e)}), 400)
+
     try:
         img = drawer.draw(json['formulas'], colors)
 
