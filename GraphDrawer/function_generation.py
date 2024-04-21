@@ -1,4 +1,5 @@
 from math import cos, sin, tan, gamma, log, pi, e
+import math
 
 
 def fac(x):
@@ -14,6 +15,15 @@ def shift_code(text, level):
     for line in text.split('\n'):
         res += ' ' * 4 * level + line + '\n'
     return res
+
+
+def sign(i):
+    if i == 0:
+        return 0
+    elif i > 0:
+        return 1
+    elif i < 0:
+        return -1
 
 
 def generate_graph_fun(formulas, variables):
@@ -32,7 +42,7 @@ def generate_graph_fun(formulas, variables):
 
     code += f_return
 
-    loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg, 'log': log, 'pi': pi, 'e': e}
+    loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg, 'log': log, 'pi': pi, 'e': math.e, 'sign': sign}
 
     exec(code, loc)
 
@@ -52,7 +62,7 @@ def generate_vars_fun(variables):
 
     code += ' ' * 4 + f"return {', '.join(variables.keys())}"
 
-    loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg, 'log': log, 'pi': pi, 'e': e, }
+    loc = {'cos': cos, "sin": sin, 'tan': tan, 'gamma': gamma, 'fac': fac, 'tg': tg, 'log': log, 'pi': pi, 'e': e, 'sign': sign}
 
     code = compile(code, '<string>', 'exec')
     exec(code, loc)

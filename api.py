@@ -312,6 +312,7 @@ def new_news():
     current_user.news.append(new)
     db_sess.merge(current_user)
     db_sess.commit()
+
     return flask.jsonify({'success': 'OK'})
 
 
