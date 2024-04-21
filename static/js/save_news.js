@@ -10,6 +10,7 @@ function save_news(news_id, card_id) {
         'content': content,
         'graph_id': graph_id
     }
+    console.log(graph_id, req);
     xmlhttps_save_news.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             location.reload();
