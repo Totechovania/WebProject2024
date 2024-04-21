@@ -4,7 +4,6 @@ xmlhttps_add_user_news.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         let news_container = document.getElementById('news_container');
         let all_news = JSON.parse(this.responseText);
-        console.log(all_news)
 
         for (let i = 0; i < all_news.length; i++) {
             let new_elem = document.createElement('div');

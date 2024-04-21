@@ -1,5 +1,4 @@
 function generate_news_card(info, card_id) {
-    console.log(info)
     let news_info = info.news
     let user_info = info.user
     let graph_info = info.graph

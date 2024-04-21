@@ -1,5 +1,4 @@
 function add_news() {
-    console.log(cur_user_graphs);
     if (Object.keys(cur_user_graphs).length == 0) {
         alert("У вас нет ни одного графика");
         return;
@@ -25,7 +24,6 @@ function add_news() {
             xmlhttps_get_cur_graph_info.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     info_template.graph = JSON.parse(this.responseText).graph;
-                    console.log(info_template);
                     new_elem.innerHTML = generate_news_card(info_template, news_card_id);
                     news_container.appendChild(new_elem);
                     edit_news_mode(news_card_id);
@@ -37,11 +35,12 @@ function add_news() {
                     }
                     let submit_btn = document.getElementById('save_btn' + news_card_id);
                     submit_btn.innerHTML = "Опубликовать";
+
                     submit_btn.onclick = function () {
                         let req = {
                             'title': document.getElementById('card_title_input' + card_id).value,
                             'content': document.getElementById('news_text_input' + card_id).value,
-                            'graph_id': info_template.news.graph_id,
+                            'graph_id': document.getElementById('news_graph_select' + card_id).value,
                         }
                         let xmlhttps_new_news = new XMLHttpRequest();
                         xmlhttps_new_news.onreadystatechange = function () {

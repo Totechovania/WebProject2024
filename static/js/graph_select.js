@@ -7,7 +7,6 @@ xmlhttp_get_cur_usr_graphs.onreadystatechange = function () {
         for (let i = 0; i < res.length; i++) {
             cur_user_graphs[res[i]['id']] = res[i];
         }
-        console.log(cur_user_graphs);
     }
 }
 xmlhttp_get_cur_usr_graphs.open("GET", "/api/user_graphs/" + cur_user_id, true);
@@ -30,4 +29,5 @@ function select_graph(card_id, graph_id) {
     document.getElementById('news_graph_title' + card_id).innerHTML = graph['name'];
     document.getElementById('news_graph_privacy' + card_id).innerHTML = graph['private'] ? 'Приватный' : 'Публичный';
     document.getElementById("news_graph_link" + card_id).href = "/graph/" + graph_id;
+
 }
